@@ -1,0 +1,11 @@
+{
+  "project" : "proseek",
+  "table"   : "questionario",
+  "plural"  : "questionarios",
+  "policy"  : "admin,manager",
+  "fields"  :    
+  [
+    { "name":"nome",       "format":"string", "search":"y"} ,
+    { "name":"descricao",  "format":"string" }
+  ]
+}

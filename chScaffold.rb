@@ -1,0 +1,180 @@
+####################################################################################################
+def grava(texto)
+  puts texto
+end
+
+####################################################################################################
+def mkdir(path)
+  dirname = File.dirname(path)
+  unless File.directory?(dirname)
+    FileUtils.mkdir_p(dirname)
+  end 
+end
+
+####################################################################################################
+def substitui_campos(conteudo, data_hash)
+  conteudo = conteudo.gsub('##{table.camelize}',     data_hash['table'].camelize)
+  conteudo = conteudo.gsub('##{plural.camelize}',    data_hash['plural'].camelize)
+  conteudo = conteudo.gsub('##{table.capitalize}',   data_hash['table'].capitalize)
+  conteudo = conteudo.gsub('##{plural.capitalize}',  data_hash['plural'].capitalize)
+  conteudo = conteudo.gsub('##{table.downcase}',     data_hash['table'].downcase)
+  conteudo = conteudo.gsub('##{plural.downcase}',    data_hash['plural'].downcase)
+  return conteudo
+end
+
+####################################################################################################
+def gera_controller(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/controller/.")
+  fileout = "out/#{@nome}/app/controller/#{data_hash['plural'].downcase}_controller.rb"
+
+  # Cria campo Permit para ser substituido no Controller
+  permit = ""
+  data_hash['fields'].each do |field|
+    if permit == ""
+      permit += ":#{field['name']}"
+    else
+      permit += ", :#{field['name']}"
+    end
+  end
+  
+  # Carrega modelo e substitui campos
+  conteudo = File.read('controller.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+  conteudo = conteudo.gsub('##{permit}', permit)
+  
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_helper(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/helpers/.")
+  fileout = "out/#{@nome}/app/helpers/#{data_hash['plural'].downcase}_helper.rb"
+
+  
+  # Carrega modelo e substitui campos
+  conteudo = File.read('helper.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_model(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/models/.")
+  fileout = "out/#{@nome}/app/models/#{data_hash['table'].downcase}.rb"
+
+
+  # Cria campo Search para ser substituido no Model
+  search = ""
+  data_hash['fields'].each do |field|
+    next if field['search'] == nil
+    if field['search'].downcase == "y"
+      search = field['name'] 
+      break
+    end
+  end  
+  
+  # Carrega modelo e substitui campos
+  conteudo = File.read('model.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+  conteudo = conteudo.gsub('##{search}', search) if search != ""
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_policy(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/policies/.")
+  fileout = "out/#{@nome}/app/policies/#{data_hash['table'].downcase}_policy.rb"
+
+
+  # Cria Policy Default
+  linha_policy = ""
+  policies = data_hash['policy'].split(',')
+  policies.each do |policy|
+    if linha_policy == ""
+      linha_policy += "@current_user.#{policy}?"
+    else
+      linha_policy += " or @current_user.#{policy}?"
+    end
+  end
+  
+  # Carrega modelo e substitui campos
+  conteudo = File.read('policy.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+  conteudo = conteudo.gsub('##{policy}', linha_policy)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+class String
+  def camelize
+    self.split("_").each {|s| s.capitalize! }.join("")
+  end
+  def camelize!
+    self.replace(self.split("_").each {|s| s.capitalize! }.join(""))
+  end
+  def underscore
+    self.scan(/[A-Z][a-z]*/).join("_").downcase
+  end
+  def underscore!
+    self.replace(self.scan(/[A-Z][a-z]*/).join("_").downcase)
+  end
+end
+
+####################################################################################################
+# Main
+####################################################################################################
+require 'json'
+require 'fileutils'
+
+# Pega nome do arquivo nos parametros de entrada da linha de comando
+@nome = ARGV[0]
+fileOrigem = "#{@nome}.json"
+fileDestino = "#{@nome}.out"
+
+file = File.read(fileOrigem)
+data_hash = JSON.parse(file)
+
+puts "Project=#{data_hash['project']}"
+puts "Table=#{data_hash['table']}"
+puts "Plural=#{data_hash['plural']}"
+puts ""
+puts "Fields:"
+
+data_hash['fields'].each do |field|
+  puts "#{field['name']}=[#{field['format']}]"
+end
+puts ""
+
+gera_controller(data_hash)
+gera_helper(data_hash)
+gera_model(data_hash)
+gera_policy(data_hash)
+
