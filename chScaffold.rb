@@ -109,11 +109,17 @@ def gera_form(data_hash)
 
   # Cria field_list para ser substituido no _form
   field_list = gera_field_list(data_hash['fields']) 
+  #datapicker_list = gera_datapicker_list(data_hash['fields']) if @jquery_datapicker
+  #summernote_list = gera_summernote_list(data_hash['fields']) if @jquery_summernote
   
   # Carrega modelo e substitui campos
   conteudo = File.read('_form.html.model')
   conteudo = conteudo.gsub('##{field_list}', field_list)
   conteudo = substitui_campos(conteudo, data_hash)
+
+  # Verifica se precisa de JQueries
+  if @jquery_datapicker or @jquery_summernote
+    conteudo += File.read('_form.jquery.model')
 
   # Grava Controller
   FileUtils.rm(fileout) if File.exist?(fileout)
