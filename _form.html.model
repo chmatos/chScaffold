@@ -1,0 +1,47 @@
+<div class="wrapper wrapper-content animated fadeInRight">
+  <div class="row">
+    <%= form_for(@##{table.downcase}, :html => {:multipart => true, :class => "form-horizontal"}) do |f| %>
+      <% if @##{table.downcase}.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@##{table.downcase}.errors.count, t('Error')) %> <%= t('##{table.camelize}ProhibitedSaved') %></h2>
+
+          <ul>
+          <% @##{table.downcase}.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+          <div class="ibox-title">
+
+            <table width="100%">
+              <td><h2><%= t('##{table.camelize}') %></h2></td>
+              <td align="right">
+                <% if is_show %>
+                  <%= link_to t('Edit'), edit_##{table.downcase}_path(@##{table.downcase}), :class => 'btn btn-primary btn-xs' %>
+                <% else %>
+                  <%= submit_tag t('Save'), :class => 'btn btn-primary btn-xs' %>
+                  <%= submit_tag t('SaveExit'), :class => 'btn btn-white btn-xs' %>
+                <% end %>
+                <a><%= link_to t('Exit'), ##{plural.downcase}_path, :class => 'btn btn-white btn-xs' %></a>
+              </td>
+            </table>
+
+            
+          </div>
+
+          <div id="main" class="collapse in">
+            <div class="ibox-content">
+              ##{field_list}
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <% end %>
+  </div>
+</div>

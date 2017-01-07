@@ -90,8 +90,8 @@ def gera_model(data_hash)
   
   # Carrega modelo e substitui campos
   conteudo = File.read('model.model')
-  conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{search}', search) if search != ""
+  conteudo = substitui_campos(conteudo, data_hash)
 
   # Grava Controller
   FileUtils.rm(fileout) if File.exist?(fileout)
@@ -99,6 +99,60 @@ def gera_model(data_hash)
     f.write(conteudo)
   end  
   puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_form(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/_form.html.erb"
+
+  # Cria field_list para ser substituido no _form
+  field_list = gera_field_list(data_hash['fields']) 
+  
+  # Carrega modelo e substitui campos
+  conteudo = File.read('_form.html.model')
+  conteudo = conteudo.gsub('##{field_list}', field_list)
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_field_list(fields)
+  @jquery_datapicker = false
+  @jquery_summernote = false
+
+  field_list = ""
+  fields.each do |field|
+    case field['type'].downcase
+      when 'hidden'
+        field_list += File.read('_form_field_hidden.html.model')
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_value}', field['value'])      
+      when 'string'
+        field_list += File.read('_form_field.html.model')
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_type}', 'text_field')
+      when 'integer'
+        field_list += File.read('_form_field.html.model')
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_type}', 'number_field')      
+      when 'date','datetime'
+        field_list += File.read('_form_field_date.html.model')
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_type}', 'text_field')
+        @jquery_datapicker = true
+      when 'blob'
+      else 
+    end
+  end
+  return field_list
 end
 
 ####################################################################################################
@@ -177,4 +231,5 @@ gera_controller(data_hash)
 gera_helper(data_hash)
 gera_model(data_hash)
 gera_policy(data_hash)
+gera_form(data_hash)
 

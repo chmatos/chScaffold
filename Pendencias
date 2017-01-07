@@ -1,0 +1,5 @@
+Pendencias
+- quando nao houver search, nao incluir itens de search
+- is_show dos formularios
+- t('lond_date')
+- Datapicker

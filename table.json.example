@@ -1,11 +1,15 @@
 {
-  "project" : "proseek",
-  "table"   : "questionario",
-  "plural"  : "questionarios",
+  "project" : "beta_project",
+  "table"   : "post",
+  "plural"  : "posts",
   "policy"  : "admin,manager",
   "fields"  :    
   [
-    { "name":"nome",       "format":"string", "search":"y"} ,
-    { "name":"descricao",  "format":"string" }
+    { "name":"name",      "type":"string", "search":"y" } ,
+    { "name":"content",   "type":"blob" },
+    { "name":"tags",      "type":"string", "search":"y" },
+    { "name":"start_show","type":"date" },
+    { "name":"end_show",  "type":"datetime" },
+    { "name":"xpto_id",   "type":"hidden", "value":"@xpto.id" }
   ]
 }
