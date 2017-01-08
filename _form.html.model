@@ -49,11 +49,9 @@
 <% content_for :javascript do %>
   <script type="text/javascript">
     $(function() {
-
       ##{datapicker_list}
        
       ##{summernote_list}
-      
     });
     
   </script>
