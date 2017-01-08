@@ -109,10 +109,14 @@ def gera_form(data_hash)
 
   # Cria field_list para ser substituido no _form
   field_list = gera_field_list(data_hash['fields']) 
+  datapicker_list = gera_datapicker_list(data_hash['fields'])
+  summernote_list = gera_summernote_list(data_hash['fields'])
   
   # Carrega modelo e substitui campos
   conteudo = File.read('_form.html.model')
   conteudo = conteudo.gsub('##{field_list}', field_list)
+  conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
+  conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
   # Grava Controller
@@ -125,9 +129,6 @@ end
 
 ####################################################################################################
 def gera_field_list(fields)
-  @jquery_datapicker = false
-  @jquery_summernote = false
-
   field_list = ""
   fields.each do |field|
     case field['type'].downcase
@@ -147,12 +148,39 @@ def gera_field_list(fields)
         field_list += File.read('_form_field_date.html.model')
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
-        @jquery_datapicker = true
       when 'blob'
       else 
     end
   end
   return field_list
+end
+
+####################################################################################################
+def gera_datapicker_list(fields)
+  datapicker_list = ""
+  fields.each do |field|
+    case field['type'].downcase
+      when 'date','datetime'
+        datapicker_list += File.read('jquery_datapicker_date.model')
+        datapicker_list = datapicker_list.gsub('##{field_name}', field['name'])
+      else 
+    end
+  end
+  return datapicker_list
+end
+
+####################################################################################################
+def gera_summernote_list(fields)
+  summernote_list = ""
+  fields.each do |field|
+    case field['type'].downcase
+      when 'blob'
+        #summernote_list += File.read('jquery_summernote.model')
+        #summernote_list = summernote_list.gsub('##{field_name}', field['name'])
+      else 
+    end
+  end
+  return summernote_list
 end
 
 ####################################################################################################
@@ -223,7 +251,7 @@ puts ""
 puts "Fields:"
 
 data_hash['fields'].each do |field|
-  puts "#{field['name']}=[#{field['format']}]"
+  puts "#{field['name']}=[#{field['type']}]"
 end
 puts ""
 
