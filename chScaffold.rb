@@ -128,6 +128,60 @@ def gera_form(data_hash)
 end
 
 ####################################################################################################
+def gera_new(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/new.html.erb"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('new.html.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_show(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/show.html.erb"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('show.html.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_edit(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/edit.html.erb"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('edit.html.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
 def gera_field_list(fields)
   field_list = ""
   fields.each do |field|
@@ -260,4 +314,6 @@ gera_helper(data_hash)
 gera_model(data_hash)
 gera_policy(data_hash)
 gera_form(data_hash)
-
+gera_new(data_hash)
+gera_show(data_hash)
+gera_edit(data_hash)
