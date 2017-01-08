@@ -50,7 +50,6 @@
   <script type="text/javascript">
     $(function() {
       ##{datapicker_list}
-       
       ##{summernote_list}
     });
     
