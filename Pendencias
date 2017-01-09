@@ -1,4 +1,5 @@
 Pendencias
 - quando nao houver search, nao incluir itens de search
 - is_show dos formularios
+- number_format (application_helper)
 - Locales

@@ -24,15 +24,15 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th><%= t('##{plural.camelize}') %></th>
+                  ##{header_field_list}
                 </tr>
               </thead>
 
               <tbody>
-                <% @##{plural.downcase}.each do |questionario| %>
+                <% @##{plural.downcase}.each do |##{table.downcase}| %>
                   <tr class="gradeA">
-                    <td><%= questionario.id %></td>
-                    <td><%= link_to questionario.nome, questionario_path(questionario) %></td>
+                    <td><%= ##{table.downcase}.id %></td>
+                    ##{detail_field_list}
                   </tr>
                 <% end %>
               </tbody>
@@ -40,7 +40,7 @@
           <% else %>
             <p><%= t('EmptyList') %>.</p>
           <% end %>
-          <%= link_to t('Add'), new_questionario_path, :class => 'btn btn-primary btn-xs' %>
+          <%= link_to t('Add'), new_##{table.downcase}_path, :class => 'btn btn-primary btn-xs' %>
         </div>
       </div>
     </div>
