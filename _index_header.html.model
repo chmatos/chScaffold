@@ -1,0 +1,2 @@
+                  
+                  <th><%= t('##{field_name.camelize}') %></th>

@@ -182,6 +182,48 @@ def gera_edit(data_hash)
 end
 
 ####################################################################################################
+def gera_index(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/index.html.erb"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('index.html.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_index_partial(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/_index.html.erb"
+
+  # Cria field_list para ser substituido no _index
+  header_field_list = gera_header_field_list(data_hash['fields']) 
+  detail_field_list = gera_detail_field_list(data_hash['fields']) 
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('_index.html.model')
+  conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
+  conteudo = conteudo.gsub('##{detail_field_list}', detail_field_list) 
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
 def gera_field_list(fields)
   field_list = ""
   fields.each do |field|
@@ -194,7 +236,7 @@ def gera_field_list(fields)
         field_list += File.read('_form_field.html.model')
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
-      when 'integer'
+      when 'integer','float'
         field_list += File.read('_form_field.html.model')
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'number_field')      
@@ -207,6 +249,60 @@ def gera_field_list(fields)
     end
   end
   return field_list
+end
+
+####################################################################################################
+def gera_header_field_list(fields)
+  header_field_list = ""
+  fields.each do |field|
+    next if field['index'] != nil and field['index'].downcase == 'n'
+    header_field_list += File.read('_index_header.html.model')
+    header_field_list = header_field_list.gsub('##{field_name}', field['name'])
+    header_field_list = header_field_list.gsub('##{field_name.camelize}', field['name'].camelize)
+  end
+  return header_field_list
+end
+
+####################################################################################################
+def gera_detail_field_list(fields)
+  detail_field_list = ""
+  fields.each do |field|
+    next if field['index'] != nil and field['index'].downcase == 'n'
+    case field['type'].downcase
+      when 'hidden'   
+      when 'string'
+        detail_field_list += File.read('_index_field_string.html.model')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read('_index_field_string_link.html.model') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)
+      when 'integer'
+        detail_field_list += File.read('_index_field_number.html.model')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read('_index_field_number_link.html.model') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)
+        precision = field['precision'] != '' ? field['precision'] : 0
+        detail_field_list = detail_field_list.gsub('##{precision}', precision)       
+      when 'float'
+        detail_field_list += File.read('_index_field_number.html.model')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read('_index_field_number_link.html.model') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)   
+        precision = field['precision'] != '' ? field['precision'] : 2
+        detail_field_list = detail_field_list.gsub('##{precision}', precision)       
+      when 'date','datetime'
+        detail_field_list += File.read('_index_field_date.html.model')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read('_index_field_date_link.html.model') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)
+      when 'blob'
+      else 
+    end
+  end
+  return detail_field_list
 end
 
 ####################################################################################################
@@ -317,3 +413,5 @@ gera_form(data_hash)
 gera_new(data_hash)
 gera_show(data_hash)
 gera_edit(data_hash)
+gera_index(data_hash)
+gera_index_partial(data_hash)
