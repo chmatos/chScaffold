@@ -224,6 +224,71 @@ def gera_index_partial(data_hash)
 end
 
 ####################################################################################################
+def gera_table_json_builder(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/_#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/_#{data_hash['table'].downcase}.json.jbuilder"
+
+  # Cria campo Permit para ser substituido no Controller
+  permit = ""
+  data_hash['fields'].each do |field|
+    if permit == ""
+      permit += ":#{field['name']}"
+    else
+      permit += ", :#{field['name']}"
+    end
+  end
+  
+  # Carrega modelo e substitui campos
+  conteudo = File.read('_table.json.jbuilder.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+  conteudo = conteudo.gsub('##{permit}', permit)
+  
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_index_json_builder(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/_#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/index.json.jbuilder"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('index.json.jbuilder.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+  
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_show_json_builder(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/_#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/show.json.jbuilder"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('show.json.jbuilder.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+  
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
 def gera_field_list(fields)
   field_list = ""
   fields.each do |field|
@@ -415,3 +480,6 @@ gera_show(data_hash)
 gera_edit(data_hash)
 gera_index(data_hash)
 gera_index_partial(data_hash)
+gera_table_json_builder(data_hash)
+gera_index_json_builder(data_hash)
+gera_show_json_builder(data_hash)

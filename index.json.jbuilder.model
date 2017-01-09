@@ -1,0 +1,1 @@
+json.array! @##{plural.downcase}, partial: '##{plural.downcase}/##{table.downcase}', as: :##{table.downcase}
