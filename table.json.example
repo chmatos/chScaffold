@@ -1,10 +1,11 @@
 {
-  "project" : "beta_project",
-  "table"   : "post",
-  "plural"  : "posts",
-  "policy"  : "admin,manager",
-  "output"  : "project",
-  "fields"  :    
+  "project"   : "beta_project",
+  "table"     : "post",
+  "plural"    : "posts",
+  "policy"    : "admin,manager",
+  "output"    : "project",
+  "children"  : "pergunta",
+  "fields"    :    
   [
     { "name":"name",      "type":"string", "search":"y" } ,
     { "name":"content",   "type":"blob" },

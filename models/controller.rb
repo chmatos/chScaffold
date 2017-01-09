@@ -86,6 +86,6 @@ class ##{plural.camelize}Controller < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def ##{table.downcase}_params
-      params.require(:##{table.downcase}).permit(#{permit})
+      params.require(:##{table.downcase}).permit(##{permit})
     end
 end
