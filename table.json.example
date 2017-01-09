@@ -3,6 +3,7 @@
   "table"   : "post",
   "plural"  : "posts",
   "policy"  : "admin,manager",
+  "output"  : "project",
   "fields"  :    
   [
     { "name":"name",      "type":"string", "search":"y" } ,

@@ -16,6 +16,13 @@ JSON
   ]
 }
 
+Parameters
+- project: project name
+- table: table name
+- plural: plural of table name
+- policy: user types to add in policy files
+- output: place to save output files. "project" or "local"
+
 Field's Parameters
 - name (required)
 - type (required): strig, integer, float, date, datetime, hidden, blob
