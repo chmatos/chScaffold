@@ -26,7 +26,7 @@ end
 def gera_controller(data_hash)
   # Gera diretorio
   mkdir("#{@directory_output}/app/controllers/.")
-  fileout = "#{@directory_output}/app/controller/#{data_hash['plural'].downcase}_controller.rb"
+  fileout = "#{@directory_output}/app/controllers/#{data_hash['plural'].downcase}_controller.rb"
 
   # Cria campo Permit para ser substituido no Controller
   permit = ""
@@ -39,7 +39,7 @@ def gera_controller(data_hash)
   end
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/models/controller')
+  conteudo = File.read('models/controller')
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
 
@@ -180,7 +180,7 @@ end
 ####################################################################################################
 def gera_table_json_builder(data_hash)
   # Gera diretorio
-  mkdir("#{@directory_output}/app/views/_#{data_hash['plural'].downcase}/.")
+  mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_#{data_hash['table'].downcase}.json.jbuilder"
 
   # Cria campo Permit para ser substituido no Controller
@@ -204,7 +204,7 @@ end
 ####################################################################################################
 def gera_index_json_builder(data_hash)
   # Gera diretorio
-  mkdir("#{@directory_output}/app/views/_#{data_hash['plural'].downcase}/.")
+  mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/index.json.jbuilder"
 
   # Carrega modelo e substitui campos
@@ -217,7 +217,7 @@ end
 ####################################################################################################
 def gera_show_json_builder(data_hash)
   # Gera diretorio
-  mkdir("#{@directory_output}/app/views/_#{data_hash['plural'].downcase}/.")
+  mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/show.json.jbuilder"
 
   # Carrega modelo e substitui campos
