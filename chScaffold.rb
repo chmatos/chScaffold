@@ -182,6 +182,42 @@ def gera_edit(data_hash)
 end
 
 ####################################################################################################
+def gera_index(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/index.html.erb"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('index.html.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
+def gera_index_partial(data_hash)
+  # Gera diretorio
+  mkdir("out/#{@nome}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "out/#{@nome}/app/views/#{data_hash['plural'].downcase}/_index.html.erb"
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read('_index.html.model')
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  # Grava Controller
+  FileUtils.rm(fileout) if File.exist?(fileout)
+  File.open(fileout, "w+") do |f|
+    f.write(conteudo)
+  end  
+  puts "created: #{fileout}"
+end
+
+####################################################################################################
 def gera_field_list(fields)
   field_list = ""
   fields.each do |field|
@@ -317,3 +353,5 @@ gera_form(data_hash)
 gera_new(data_hash)
 gera_show(data_hash)
 gera_edit(data_hash)
+gera_index(data_hash)
+gera_index_partial(data_hash)
