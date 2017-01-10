@@ -15,12 +15,13 @@ Attention with the tags that should be part of each file, they have the format `
   "plural"    : "posts",
   "policy"    : "admin,manager",
   "output"    : "local",
-  "children"  : "perguntas,respostas",  
+  "has_many"  : "perguntas,respostas",  
   "fields"    :    
   [
     { "name":"name",      "type":"string", "search":"y", "index_partial":"y" } ,
     { "name":"content",   "type":"blob" },
     { "name":"tags",      "type":"string", "search":"y" },
+    { "name":"other_table_id",  "type":"integer", "select_table":"Othertable.all", "select_id":"id", "select_show":"description", "index":"n" },    
     { "name":"start_show","type":"date" },
     { "name":"end_show",  "type":"datetime" },
     { "name":"xpto_id",   "type":"hidden", "value":"@xpto.id" }
@@ -34,7 +35,7 @@ Parameters
 - plural: plural of table name
 - policy: user types to add in policy files
 - output: place to save output files. "project" or "local"
-- children: children tables (plural mandatory)
+- has_many: has_many tables (plural mandatory)
 
 Field's Parameters
 - name (required)
@@ -45,4 +46,6 @@ Field's Parameters
 - precision: define qty decimal digits 
 - index: "n" define this field will not appear in index.html
 - index_link: define field as link_to show.html
-
+- select_table: Ruby command to load collection of f.collect_select. example: Table.all or Table.select(:id, :xpto) or Table.where("xpto like ?", variable)
+- select_id: field to set field[name]
+- select_show: field which show in combobox

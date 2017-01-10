@@ -13,12 +13,13 @@ end
 
 ####################################################################################################
 def substitui_campos(conteudo, data_hash)
-  conteudo = conteudo.gsub('##{table.camelize}',     data_hash['table'].camelize)
-  conteudo = conteudo.gsub('##{plural.camelize}',    data_hash['plural'].camelize)
-  conteudo = conteudo.gsub('##{table.capitalize}',   data_hash['table'].capitalize)
-  conteudo = conteudo.gsub('##{plural.capitalize}',  data_hash['plural'].capitalize)
-  conteudo = conteudo.gsub('##{table.downcase}',     data_hash['table'].downcase)
-  conteudo = conteudo.gsub('##{plural.downcase}',    data_hash['plural'].downcase)
+  conteudo = conteudo.gsub('##{table.camelize}',    data_hash['table'].camelize)
+  conteudo = conteudo.gsub('##{plural.camelize}',   data_hash['plural'].camelize)
+  conteudo = conteudo.gsub('##{table.capitalize}',  data_hash['table'].capitalize)
+  conteudo = conteudo.gsub('##{plural.capitalize}', data_hash['plural'].capitalize)
+  conteudo = conteudo.gsub('##{table.downcase}',    data_hash['table'].downcase)
+  conteudo = conteudo.gsub('##{plural.downcase}',   data_hash['plural'].downcase)
+  conteudo = conteudo.gsub('##{belongs_to}',        data_hash['belongs_to'].downcase) if data_hash['belongs_to'] != nil
   return conteudo
 end
 
@@ -66,6 +67,9 @@ def gera_model(data_hash)
   mkdir("#{@directory_output}/app/models/.")
   fileout = "#{@directory_output}/app/models/#{data_hash['table'].downcase}.rb"
 
+  # Gera has_many_tables
+  has_many_list = gera_has_many_list(data_hash)
+  belongs_to_list = gera_belongs_to_list(data_hash)
 
   # Cria campo Search para ser substituido no Model
   search = ""
@@ -80,6 +84,8 @@ def gera_model(data_hash)
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/model.rb")
   conteudo = conteudo.gsub('##{search}', search) if search != ""
+  conteudo = conteudo.gsub('##{has_many_list}', has_many_list) 
+  conteudo = conteudo.gsub('##{belongs_to_list}', belongs_to_list) 
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -95,14 +101,14 @@ def gera_form(data_hash)
   field_list = gera_field_list(data_hash['fields']) 
   datapicker_list = gera_datapicker_list(data_hash['fields'])
   summernote_list = gera_summernote_list(data_hash['fields'])
-  children_table_list = gera_children_table_list(data_hash)
-  
+  render_index_list = gera_render_index(data_hash)
+
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/_form.html")
   conteudo = conteudo.gsub('##{field_list}', field_list)
   conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
-  conteudo = conteudo.gsub('##{children_table_list}', children_table_list)
+  conteudo = conteudo.gsub('##{render_index_list}', render_index_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -243,12 +249,22 @@ def gera_field_list(fields)
       when 'hidden'
         field_list += File.read("models/#{@model}/_form_field_hidden.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
-        field_list = field_list.gsub('##{field_value}', field['value'])      
+        field_list = field_list.gsub('##{field_value}', field['value'])            
+      when 'parent'
+        field_list += File.read("models/#{@model}/_form_field_parent.html")    
       when 'string'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
-      when 'integer','float'
+      when 'integer'
+        field_list += File.read("models/#{@model}/_form_field_collect_select.html") if field['select_table'] != nil  
+        field_list += File.read("models/#{@model}/_form_field.html")                if field['select_table'] == nil or field['select_id'] == nil or field['select_show'] == nil
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_type}', 'number_field')        
+        field_list = field_list.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
+        field_list = field_list.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
+        field_list = field_list.gsub('##{select_show}', field['select_show'])   if field['select_show'] != nil      
+      when 'float'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'number_field')      
@@ -296,15 +312,17 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
-        precision = field['precision'] != '' ? field['precision'] : 0
-        detail_field_list = detail_field_list.gsub('##{precision}', precision)       
+        precision = 0 
+        precision = field['precision'] if field['precision'] != nil
+        detail_field_list = detail_field_list.gsub('##{precision}', precision.to_s)       
       when 'float'
         detail_field_list += File.read("models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)   
-        precision = field['precision'] != '' ? field['precision'] : 2
+        precision = 2 
+        precision = field['precision'] if field['precision'] != nil
         detail_field_list = detail_field_list.gsub('##{precision}', precision)       
       when 'date','datetime'
         detail_field_list += File.read("models/#{@model}/_index_field_date.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
@@ -348,14 +366,42 @@ def gera_summernote_list(fields)
 end
 
 ####################################################################################################
-def gera_children_table_list(data_hash)
-  children_table_list = ""
-  children_tables = data_hash['children'].split(',')
-  children_tables.each do |children_table|
-    children_table_list += File.read("models/#{@model}/index_partial.html")
-    children_table_list = children_table_list.gsub('##{children_table}', children_table.gsub(/\s+/, ""))
+def gera_has_many_list(data_hash)
+  has_many_list = ""
+  return has_many_list if data_hash['has_many'] == nil 
+
+  has_manies = data_hash['has_many'].split(',')
+  has_manies.each do |has_many|
+    has_many_list += File.read("models/#{@model}/model_has_many.rb")
+    has_many_list = has_many_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
   end
-  return children_table_list
+  return has_many_list
+end
+
+####################################################################################################
+def gera_belongs_to_list(data_hash)
+  belongs_to_list = ""
+  return belongs_to_list if data_hash['belongs_to'] == nil 
+
+  belongs_tos = data_hash['belongs_to'].split(',')
+  belongs_tos.each do |belongs_to|
+    belongs_to_list += File.read("models/#{@model}/model_belongs_to.rb")
+    belongs_to_list = belongs_to_list.gsub('##{belongs_to}', belongs_to.gsub(/\s+/, ""))
+  end
+  return belongs_to_list
+end
+
+####################################################################################################
+def gera_render_index(data_hash)
+  render_index_list = ""
+  return render_index_list if data_hash['has_many'] == nil 
+
+  has_many_tables = data_hash['has_many'].split(',')
+  has_many_tables.each do |has_many_table|
+    render_index_list += File.read("models/#{@model}/render_index.html")
+    render_index_list = render_index_list.gsub('##{has_many_table}', has_many_table.gsub(/\s+/, ""))
+  end
+  return render_index_list
 end
 
 ####################################################################################################
@@ -384,6 +430,7 @@ def gera_policy(data_hash)
   grava(fileout,conteudo)
 end
 
+####################################################################################################
 def grava(fileout,conteudo)
   # Grava Controller
   FileUtils.rm(fileout) if File.exist?(fileout)

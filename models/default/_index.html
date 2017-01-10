@@ -21,5 +21,5 @@
             <% else %>
               <p><%= t('EmptyList') %>.</p>
             <% end %>
-            <%= link_to t('Add'), new_##{table.downcase}_path, :class => 'btn btn-primary btn-xs' %>
+            <%= link_to t('Add'), new_##{table.downcase}_path(:##{belongs_to}_id => @##{belongs_to}.id), :class => 'btn btn-primary btn-xs' %>
           </div>
