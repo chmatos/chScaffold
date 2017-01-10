@@ -5,12 +5,13 @@
   "plural"    : "posts",
   "policy"    : "admin,manager",
   "output"    : "project",
-  "children"  : "pergunta",
+  "has_many"  : "pergunta",
   "fields"    :    
   [
-    { "name":"name",      "type":"string", "search":"y" } ,
-    { "name":"content",   "type":"blob" },
-    { "name":"tags",      "type":"string", "search":"y" },
+    { "name":"name",            "type":"string", "search":"y" } ,
+    { "name":"content",         "type":"blob" },
+    { "name":"tags",            "type":"string", "search":"y" },
+    { "name":"other_table_id",  "type":"integer", "select_table":"Othertable.all", "select_id":"id", "select_show":"description", "index":"n" },
     { "name":"start_show","type":"date" },
     { "name":"end_show",  "type":"datetime" },
     { "name":"xpto_id",   "type":"hidden", "value":"@xpto.id" }
