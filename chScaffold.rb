@@ -39,7 +39,7 @@ def gera_controller(data_hash)
   end
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/controller.rb')
+  conteudo = File.read("models/#{@model}/controller.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
 
@@ -54,7 +54,7 @@ def gera_helper(data_hash)
 
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/helper.rb')
+  conteudo = File.read("models/#{@model}/helper.rb")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -78,7 +78,7 @@ def gera_model(data_hash)
   end  
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/model.rb')
+  conteudo = File.read("models/#{@model}/model.rb")
   conteudo = conteudo.gsub('##{search}', search) if search != ""
   conteudo = substitui_campos(conteudo, data_hash)
 
@@ -98,7 +98,7 @@ def gera_form(data_hash)
   children_table_list = gera_children_table_list(data_hash)
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/_form.html')
+  conteudo = File.read("models/#{@model}/_form.html")
   conteudo = conteudo.gsub('##{field_list}', field_list)
   conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
@@ -115,7 +115,7 @@ def gera_new(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/new.html.erb"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/new.html')
+  conteudo = File.read("models/#{@model}/new.html")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -128,7 +128,7 @@ def gera_show(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/show.html.erb"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/show.html')
+  conteudo = File.read("models/#{@model}/show.html")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -141,7 +141,7 @@ def gera_edit(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/edit.html.erb"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/edit.html')
+  conteudo = File.read("models/#{@model}/edit.html")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -158,7 +158,7 @@ def gera_index(data_hash)
   detail_field_list = gera_detail_field_list(data_hash['fields']) 
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/index.html')
+  conteudo = File.read("models/#{@model}/index.html")
   conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
   conteudo = conteudo.gsub('##{detail_field_list}', detail_field_list) 
   conteudo = substitui_campos(conteudo, data_hash)
@@ -177,7 +177,7 @@ def gera_index_partial(data_hash)
   detail_field_list = gera_detail_field_list(data_hash['fields'], partial: true) 
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/_index.html')
+  conteudo = File.read("models/#{@model}/_index.html")
   conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
   conteudo = conteudo.gsub('##{detail_field_list}', detail_field_list) 
   conteudo = substitui_campos(conteudo, data_hash)
@@ -202,7 +202,7 @@ def gera_table_json_builder(data_hash)
   end
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/_table.json.jbuilder')
+  conteudo = File.read("models/#{@model}/_table.json.jbuilder")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
 
@@ -216,7 +216,7 @@ def gera_index_json_builder(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/index.json.jbuilder"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/index.json.jbuilder')
+  conteudo = File.read("models/#{@model}/index.json.jbuilder")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -229,7 +229,7 @@ def gera_show_json_builder(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/show.json.jbuilder"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/show.json.jbuilder')
+  conteudo = File.read("models/#{@model}/show.json.jbuilder")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -241,19 +241,19 @@ def gera_field_list(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'hidden'
-        field_list += File.read('models/_form_field_hidden.html')
+        field_list += File.read("models/#{@model}/_form_field_hidden.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_value}', field['value'])      
       when 'string'
-        field_list += File.read('models/_form_field.html')
+        field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
       when 'integer','float'
-        field_list += File.read('models/_form_field.html')
+        field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'number_field')      
       when 'date','datetime'
-        field_list += File.read('models/_form_field_date.html')
+        field_list += File.read("models/#{@model}/_form_field_date.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
       when 'blob'
@@ -269,7 +269,7 @@ def gera_header_field_list(fields, partial: false)
   fields.each do |field|
     next if field['index'] != nil and field['index'].downcase == 'n'
     next if partial and (field['index_partial'] == nil or field['index_partial'].downcase != 'y')
-    header_field_list += File.read('models/_index_header.html')
+    header_field_list += File.read("models/#{@model}/_index_header.html")
     header_field_list = header_field_list.gsub('##{field_name}', field['name'])
     header_field_list = header_field_list.gsub('##{field_name.camelize}', field['name'].camelize)
   end
@@ -285,30 +285,30 @@ def gera_detail_field_list(fields, partial: false)
     case field['type'].downcase
       when 'hidden'   
       when 'string'
-        detail_field_list += File.read('models/_index_field_string.html')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read('models/_index_field_string_link.html') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'integer'
-        detail_field_list += File.read('models/_index_field_number.html')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read('models/_index_field_number_link.html') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
         precision = field['precision'] != '' ? field['precision'] : 0
         detail_field_list = detail_field_list.gsub('##{precision}', precision)       
       when 'float'
-        detail_field_list += File.read('models/_index_field_number.html')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read('models/_index_field_number_link.html') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)   
         precision = field['precision'] != '' ? field['precision'] : 2
         detail_field_list = detail_field_list.gsub('##{precision}', precision)       
       when 'date','datetime'
-        detail_field_list += File.read('models/_index_field_date.html')      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read('models/_index_field_date_link.html') if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_date.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_date_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
@@ -325,7 +325,7 @@ def gera_datapicker_list(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'date','datetime'
-        datapicker_list += File.read('models/jquery_datapicker_date')
+        datapicker_list += File.read("models/#{@model}/jquery_datapicker_date")
         datapicker_list = datapicker_list.gsub('##{field_name}', field['name'])
       else 
     end
@@ -339,7 +339,7 @@ def gera_summernote_list(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'blob'
-        #summernote_list += File.read('models/jquery_summernote')
+        #summernote_list += File.read("models/#{@model}/jquery_summernote")
         #summernote_list = summernote_list.gsub('##{field_name}', field['name'])
       else 
     end
@@ -352,7 +352,7 @@ def gera_children_table_list(data_hash)
   children_table_list = ""
   children_tables = data_hash['children'].split(',')
   children_tables.each do |children_table|
-    children_table_list += File.read('models/index_partial.html')
+    children_table_list += File.read("models/#{@model}/index_partial.html")
     children_table_list = children_table_list.gsub('##{children_table}', children_table.gsub(/\s+/, ""))
   end
   return children_table_list
@@ -377,7 +377,7 @@ def gera_policy(data_hash)
   end
   
   # Carrega modelo e substitui campos
-  conteudo = File.read('models/policy.rb')
+  conteudo = File.read("models/#{@model}/policy.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{policy}', linha_policy)
 
@@ -434,6 +434,13 @@ if data_hash['output'].downcase == 'local'
   @directory_output = "out/#{data_hash['project']}"
 else
   @directory_output = "../#{data_hash['project']}"
+end
+
+# Monta o nome do Modelo a ser usado
+if data_hash['model'] == nil
+  @model = 'default'
+else
+  @model = data_hash['model']
 end
 
 gera_controller(data_hash)

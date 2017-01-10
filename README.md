@@ -10,6 +10,7 @@ Attention with the tags that should be part of each file, they have the format `
 
 `{
   "project"   : "beta_project",
+  "model"     : "default",
   "table"     : "post",
   "plural"    : "posts",
   "policy"    : "admin,manager",
@@ -28,6 +29,7 @@ Attention with the tags that should be part of each file, they have the format `
 
 Parameters
 - project: project name
+- model: subdirectory where the template is
 - table: table name
 - plural: plural of table name
 - policy: user types to add in policy files

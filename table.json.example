@@ -1,5 +1,6 @@
 {
   "project"   : "beta_project",
+  "model"     : "default",  
   "table"     : "post",
   "plural"    : "posts",
   "policy"    : "admin,manager",
