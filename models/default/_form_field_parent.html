@@ -1,3 +1,4 @@
               
-              <%= f.hidden_field :##{belongs_to}_id, :value => params[:##{belongs_to}_id] %>
+              <%= f.hidden_field :##{field_name}, :value => params[:parent_id] %>
+              <%= hidden_field_tag :parent_id, params[:parent_id] %>
               

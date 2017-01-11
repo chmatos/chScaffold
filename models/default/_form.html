@@ -16,7 +16,6 @@
       <div class="col-sm-12">
         <div class="ibox float-e-margins">
           <div class="ibox-title">
-
             <table width="100%">
               <td><h2><%= t('##{table.camelize}') %></h2></td>
               <td align="right">
@@ -24,14 +23,13 @@
                   <%= link_to t('Edit'), edit_##{table.downcase}_path(@##{table.downcase}), :class => 'btn btn-primary btn-xs' %>
                 <% else %>
                   <%= submit_tag t('Save'), :class => 'btn btn-primary btn-xs' %>
-                  <%= submit_tag t('SaveExit'), :class => 'btn btn-white btn-xs' %>
                 <% end %>
-                <a><%= link_to t('Exit'), ##{plural.downcase}_path, :class => 'btn btn-white btn-xs' %></a>
+                <a><%= link_to t('Exit'), :back, :class => 'btn btn-white btn-xs' %></a>
               </td>
             </table>
-
-            
           </div>
+
+          <%= hidden_field_tag :parent_class, params[:parent_class] if params[:parent_class].present? %>
 
           <div class="ibox-content">
             ##{field_list}

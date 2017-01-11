@@ -19,7 +19,7 @@ def substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{plural.capitalize}', data_hash['plural'].capitalize)
   conteudo = conteudo.gsub('##{table.downcase}',    data_hash['table'].downcase)
   conteudo = conteudo.gsub('##{plural.downcase}',   data_hash['plural'].downcase)
-  conteudo = conteudo.gsub('##{belongs_to}',        data_hash['belongs_to'].downcase) if data_hash['belongs_to'] != nil
+  #conteudo = conteudo.gsub('##{belongs_to}',        data_hash['belongs_to'].downcase) if data_hash['belongs_to'] != nil  
   return conteudo
 end
 
@@ -254,6 +254,7 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{field_value}', field['value'])            
       when 'parent'
         field_list += File.read("models/#{@model}/_form_field_parent.html")    
+        field_list = field_list.gsub('##{field_name}', field['name'])
       when 'string'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
@@ -336,6 +337,12 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("models/#{@model}/_index_field_date.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("models/#{@model}/_index_field_date_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)
+      when 'select'
+        detail_field_list += File.read("models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', "#{field['name'].split('_')[0]}.#{field['select_show']}")
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       #when 'blob'

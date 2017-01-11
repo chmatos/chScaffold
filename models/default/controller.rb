@@ -35,8 +35,8 @@ class ##{plural.camelize}Controller < ApplicationController
 
     respond_to do |format|
       if @##{table.downcase}.save
-        if params[:commit] == t('Save')
-          format.html { redirect_to edit_##{table.downcase}_path(@##{table.downcase}), notice: '##{table.capitalize} was successfully created.' }
+        if params[:parent_class].present?
+          format.html { redirect_to controller: params[:parent_class].pluralize, action: 'show', id: params[:parent_id].to_i, notice: '##{table.capitalize} was successfully created.' }
         else
           format.html { redirect_to ##{plural.downcase}_path, notice: '##{table.capitalize} was successfully created.' }
         end
@@ -54,8 +54,8 @@ class ##{plural.camelize}Controller < ApplicationController
     authorize @##{table.downcase}
     respond_to do |format|
       if @##{table.downcase}.update(##{table.downcase}_params)
-        if params[:commit] == t('Save')
-          format.html { redirect_to edit_##{table.downcase}_path(@##{table.downcase}), notice: '##{table.capitalize} was successfully updated.' }
+        if params[:parent_class].present?
+          format.html { redirect_to controller: params[:parent_class].pluralize, action: 'show', id: params[:parent_id].to_i, notice: '##{table.capitalize} was successfully updated.' }
         else
           format.html { redirect_to ##{plural.downcase}_path, notice: '##{table.capitalize} was successfully updated.' }
         end
