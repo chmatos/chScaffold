@@ -281,6 +281,8 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
       when 'blob'
+        field_list += File.read("models/#{@model}/_form_field_blob.html")
+        field_list = field_list.gsub('##{field_name}', field['name'])    
       else 
     end
   end
@@ -309,7 +311,7 @@ def gera_detail_field_list(fields, partial: false)
     next if partial and (field['index_partial'] == nil or field['index_partial'].downcase != 'y')
     case field['type'].downcase
       when 'hidden'   
-      when 'string','enum','blob'
+      when 'string','enum'
         detail_field_list += File.read("models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
@@ -345,7 +347,12 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list = detail_field_list.gsub('##{field_name}', "#{field['name'].split('_')[0]}.#{field['select_show']}")
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
-      #when 'blob'
+      when 'blob'
+        detail_field_list += File.read("models/#{@model}/_index_field_blob.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_blob_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)        
       else 
     end
   end
@@ -372,8 +379,8 @@ def gera_summernote_list(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'blob'
-        #summernote_list += File.read("models/#{@model}/jquery_summernote")
-        #summernote_list = summernote_list.gsub('##{field_name}', field['name'])
+        summernote_list += File.read("models/#{@model}/jquery_summernote")
+        summernote_list = summernote_list.gsub('##{field_name}', field['name'])
       else 
     end
   end
