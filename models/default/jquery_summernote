@@ -1,0 +1,3 @@
+      
+          $('.summernote').summernote("<%= params[:action] == 'show' ? 'disable' : 'enable' %>");
+         
