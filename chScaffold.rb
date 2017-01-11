@@ -19,7 +19,7 @@ def substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{plural.capitalize}', data_hash['plural'].capitalize)
   conteudo = conteudo.gsub('##{table.downcase}',    data_hash['table'].downcase)
   conteudo = conteudo.gsub('##{plural.downcase}',   data_hash['plural'].downcase)
-  conteudo = conteudo.gsub('##{belongs_to}',        data_hash['belongs_to'].downcase) if data_hash['belongs_to'] != nil
+  #conteudo = conteudo.gsub('##{belongs_to}',        data_hash['belongs_to'].downcase) if data_hash['belongs_to'] != nil  
   return conteudo
 end
 
@@ -67,9 +67,10 @@ def gera_model(data_hash)
   mkdir("#{@directory_output}/app/models/.")
   fileout = "#{@directory_output}/app/models/#{data_hash['table'].downcase}.rb"
 
-  # Gera has_many_tables
+  # Gera listas para substituicao
   has_many_list = gera_has_many_list(data_hash)
   belongs_to_list = gera_belongs_to_list(data_hash)
+  enum_list = gera_enum_list(data_hash)
 
   # Cria campo Search para ser substituido no Model
   search = ""
@@ -80,12 +81,13 @@ def gera_model(data_hash)
       break
     end
   end  
-  
+
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/model.rb")
   conteudo = conteudo.gsub('##{search}', search) if search != ""
   conteudo = conteudo.gsub('##{has_many_list}', has_many_list) 
   conteudo = conteudo.gsub('##{belongs_to_list}', belongs_to_list) 
+  conteudo = conteudo.gsub('##{enum_list}', enum_list) 
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -252,15 +254,21 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{field_value}', field['value'])            
       when 'parent'
         field_list += File.read("models/#{@model}/_form_field_parent.html")    
+        field_list = field_list.gsub('##{field_name}', field['name'])
       when 'string'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
-      when 'integer'
-        field_list += File.read("models/#{@model}/_form_field_collect_select.html") if field['select_table'] != nil  
-        field_list += File.read("models/#{@model}/_form_field.html")                if field['select_table'] == nil or field['select_id'] == nil or field['select_show'] == nil
+      when 'enum'
+        field_list += File.read("models/#{@model}/_form_field_enum.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
-        field_list = field_list.gsub('##{field_type}', 'number_field')        
+      when 'integer'
+        field_list += File.read("models/#{@model}/_form_field.html")
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_type}', 'number_field')           
+      when 'select'
+        field_list += File.read("models/#{@model}/_form_field_collect_select.html")
+        field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
         field_list = field_list.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
         field_list = field_list.gsub('##{select_show}', field['select_show'])   if field['select_show'] != nil      
@@ -285,6 +293,7 @@ def gera_header_field_list(fields, partial: false)
   fields.each do |field|
     next if field['index'] != nil and field['index'].downcase == 'n'
     next if partial and (field['index_partial'] == nil or field['index_partial'].downcase != 'y')
+    next if field['type'] == 'hidden' or field['type'] == 'parent'
     header_field_list += File.read("models/#{@model}/_index_header.html")
     header_field_list = header_field_list.gsub('##{field_name}', field['name'])
     header_field_list = header_field_list.gsub('##{field_name.camelize}', field['name'].camelize)
@@ -300,7 +309,7 @@ def gera_detail_field_list(fields, partial: false)
     next if partial and (field['index_partial'] == nil or field['index_partial'].downcase != 'y')
     case field['type'].downcase
       when 'hidden'   
-      when 'string'
+      when 'string','enum','blob'
         detail_field_list += File.read("models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
@@ -330,7 +339,13 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
-      when 'blob'
+      when 'select'
+        detail_field_list += File.read("models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}', "#{field['name'].split('_')[0]}.#{field['select_show']}")
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)
+      #when 'blob'
       else 
     end
   end
@@ -389,6 +404,19 @@ def gera_belongs_to_list(data_hash)
     belongs_to_list = belongs_to_list.gsub('##{belongs_to}', belongs_to.gsub(/\s+/, ""))
   end
   return belongs_to_list
+end
+
+####################################################################################################
+def gera_enum_list(data_hash)
+  enum_list = ""
+
+  data_hash['fields'].each do |field|
+    next if field['type'] != 'enum'
+    enum_list += File.read("models/#{@model}/model_enum.rb")
+    enum_list = enum_list.gsub('##{field_name}', field['name'])
+    enum_list = enum_list.gsub('##{enum_list}',  field['enum_list'])
+  end
+  return enum_list
 end
 
 ####################################################################################################

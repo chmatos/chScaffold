@@ -24,6 +24,7 @@ Attention with the tags that should be part of each file, they have the format `
     { "name":"other_table_id",  "type":"integer", "select_table":"Othertable.all", "select_id":"id", "select_show":"description", "index":"n" },    
     { "name":"start_show","type":"date" },
     { "name":"end_show",  "type":"datetime" },
+    { "name":"role",      "type":"enum", "enum_list":":user, :manager, :admin" },
     { "name":"xpto_id",   "type":"hidden", "value":"@xpto.id" }
   ]
 }`
@@ -49,3 +50,4 @@ Field's Parameters
 - select_table: Ruby command to load collection of f.collect_select. example: Table.all or Table.select(:id, :xpto) or Table.where("xpto like ?", variable)
 - select_id: field to set field[name]
 - select_show: field which show in combobox
+- enum: indicate a integer field set from enum list, defined in table's model
