@@ -113,6 +113,8 @@ def gera_form(data_hash)
   conteudo = conteudo.gsub('##{render_index_list}', render_index_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
+  add_summernote_files(data_hash)
+
   grava(fileout,conteudo)
 end
 
@@ -476,8 +478,21 @@ def grava(fileout,conteudo)
 end
 
 ####################################################################################################
+def add_summernote_files(data_hash)
+  add_gem(data_hash,'summernote-rails')
+  add_in_file(data_hash, 'app/assets/javascripts/application.js', '//= require summernote/summernote.min.js', 'end')
+  add_in_file(data_hash, 'app/assets/stylesheets/application.css', '//= require summernote/summernote-bs3.css', 'end')
+  add_in_file(data_hash, 'app/assets/stylesheets/application.css', '//= require summernote/summernote.css', 'end')
+end
+
+####################################################################################################
 def add_table_in_routes(data_hash)
-  add_in_file(data_hash, 'config/routes.rb',"  resources :#{data_hash['plural']}", '2')
+  add_in_file(data_hash, 'config/routes.rb',"  resources :#{data_hash['plural']}", 2)
+end
+
+####################################################################################################
+def add_gem(data_hash,gem)
+  add_in_file(data_hash, 'Gemfile',"gem '" + gem + "'", 3)
 end
 
 ####################################################################################################
