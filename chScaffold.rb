@@ -476,6 +476,61 @@ def grava(fileout,conteudo)
 end
 
 ####################################################################################################
+def add_table_in_routes(data_hash)
+  add_in_file(data_hash, 'config/routes.rb',"  resources :#{data_hash['plural']}", '2')
+end
+
+####################################################################################################
+def add_in_file(data_hash,file,campo,where)
+  mkdir("#{@directory_output}/#{file}")
+  fileout = "#{@directory_output}/#{file}"  
+
+  conteudo = File.read(fileout) if File.exist?(fileout)
+  conteudo_splited = conteudo.split('\n')
+  if !conteudo.gsub(/\s+/, "").include? campo.gsub(/\s+/, "")
+    case 
+      when where == 'top'
+        conteudo = "#{campo}\n#{conteudo}"
+      when (where == 'end' or where == 'botton')
+        conteudo = "#{conteudo}\n#{campo}" 
+      #when (where.is_a? Integer)
+      when where > 0
+        #puts "where=#{where}"
+        saida = ""
+        line_count = 1
+        conteudo = File.readlines(fileout) if File.exist?(fileout)
+        #puts conteudo.count
+        where_aux = where
+        if where < 0
+          counteudo = conteudo.reverse
+          where_aux *= (-1)
+        end
+        conteudo.each do |line|
+          #puts "where_aux=#{where_aux}"
+          if line_count == where_aux.to_i
+            saida += "#{campo}\n"
+            line_count += 1
+          end  
+          saida += "#{line}"
+          #puts line if line.gsub(/\s+/, "") != ""
+          line_count += 1 if line.gsub(/\s+/, "") != ""
+          #puts line_count
+        end
+        if where > 0
+          #puts "where > 0"
+          conteudo = saida
+        else
+          #puts "where < 0"
+          counteudo = saida.reverse
+        end
+      else
+    end
+  end
+
+  grava(fileout,conteudo)
+end
+
+####################################################################################################
 class String
   def camelize
     self.split("_").each {|s| s.capitalize! }.join("")
@@ -538,3 +593,4 @@ gera_index_partial(data_hash)
 gera_table_json_builder(data_hash)
 gera_index_json_builder(data_hash)
 gera_show_json_builder(data_hash)
+add_table_in_routes(data_hash)
