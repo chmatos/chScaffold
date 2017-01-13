@@ -496,11 +496,11 @@ end
 
 ####################################################################################################
 def add_helpers_in_apllication_helper(data_hash)
-  conteudo = File.read("models/#{@model}/format_number_helper.rb")
-  add_in_file(data_hash, 'app/helpers/application_helper.tb',conteudo, 2)
+  conteudo = File.read("models/#{@model}/number_format_helper.rb")
+  add_in_file(data_hash, 'app/helpers/application_helper.rb',conteudo, 2)
 
   conteudo = File.read("models/#{@model}/is_show_helper.rb")
-  add_in_file(data_hash, 'app/helpers/application_helper.tb',conteudo, 2)
+  add_in_file(data_hash, 'app/helpers/application_helper.rb',conteudo, 2)
 end
 
 ####################################################################################################
@@ -509,8 +509,7 @@ def add_in_file(data_hash,file,campo,where)
   fileout = "#{@directory_output}/#{file}"  
 
   conteudo = File.read(fileout) if File.exist?(fileout)
-  conteudo_splited = conteudo.split('\n')
-  if !conteudo.gsub(/\s+/, "").include? campo.gsub(/\s+/, "")
+  if !conteudo.gsub(/\s+/, "").include? campo.to_s.gsub(/\s+/, "")
     case 
       when where == 'top'
         conteudo = "#{campo}\n#{conteudo}"
