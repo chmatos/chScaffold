@@ -53,7 +53,6 @@ def gera_helper(data_hash)
   mkdir("#{@directory_output}/app/helpers/.")
   fileout = "#{@directory_output}/app/helpers/#{data_hash['plural'].downcase}_helper.rb"
 
-  
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/helper.rb")
   conteudo = substitui_campos(conteudo, data_hash)
@@ -496,6 +495,15 @@ def add_gem(data_hash,gem)
 end
 
 ####################################################################################################
+def add_helpers_in_apllication_helper(data_hash)
+  conteudo = File.read("models/#{@model}/format_number_helper.rb")
+  add_in_file(data_hash, 'app/helpers/application_helper.tb',conteudo, 2)
+
+  conteudo = File.read("models/#{@model}/is_show_helper.rb")
+  add_in_file(data_hash, 'app/helpers/application_helper.tb',conteudo, 2)
+end
+
+####################################################################################################
 def add_in_file(data_hash,file,campo,where)
   mkdir("#{@directory_output}/#{file}")
   fileout = "#{@directory_output}/#{file}"  
@@ -609,3 +617,4 @@ gera_table_json_builder(data_hash)
 gera_index_json_builder(data_hash)
 gera_show_json_builder(data_hash)
 add_table_in_routes(data_hash)
+add_helpers_in_apllication_helper(data_hash)
