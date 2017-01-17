@@ -32,14 +32,7 @@ def gera_controller(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['controller'] != nil and data_hash['files'][0]['controller'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Cria campo Permit para ser substituido no Controller
-  permit = ""
-  data_hash['fields'].each do |field|
-    if permit == ""
-      permit += ":#{field['name']}"
-    else
-      permit += ", :#{field['name']}"
-    end
-  end
+  permit = gera_permit(data_hash['fields'])
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/controller.rb")
@@ -75,6 +68,7 @@ def gera_model(data_hash)
   # Gera listas para substituicao
   has_many_list = gera_has_many_list(data_hash)
   belongs_to_list = gera_belongs_to_list(data_hash)
+  has_and_belongs_to_many_list = gera_has_and_belongs_to_many_list(data_hash)
   enum_list = gera_enum_list(data_hash)
 
   # Cria campo Search para ser substituido no Model
@@ -92,6 +86,7 @@ def gera_model(data_hash)
   conteudo = conteudo.gsub('##{search}', search) if search != ""
   conteudo = conteudo.gsub('##{has_many_list}', has_many_list) 
   conteudo = conteudo.gsub('##{belongs_to_list}', belongs_to_list) 
+  conteudo = conteudo.gsub('##{has_and_belongs_to_many_list}', has_and_belongs_to_many_list) 
   conteudo = conteudo.gsub('##{enum_list}', enum_list) 
   conteudo = substitui_campos(conteudo, data_hash)
 
@@ -110,6 +105,7 @@ def gera_form(data_hash)
   field_list = gera_field_list(data_hash['fields']) 
   datapicker_list = gera_datapicker_list(data_hash['fields'])
   summernote_list = gera_summernote_list(data_hash['fields'])
+  dual_select = gera_dual_select(data_hash['fields'])
   render_index_list = gera_render_index(data_hash)
 
   # Carrega modelo e substitui campos
@@ -117,10 +113,12 @@ def gera_form(data_hash)
   conteudo = conteudo.gsub('##{field_list}', field_list)
   conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
+  conteudo = conteudo.gsub('##{dual_select}', dual_select)
   conteudo = conteudo.gsub('##{render_index_list}', render_index_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
-  add_summernote_files(data_hash)
+  add_summernote_files(data_hash)  if summernote_list != ''
+  add_dual_select_files(data_hash) if dual_select != ''
 
   grava(fileout,conteudo)
 end
@@ -219,14 +217,7 @@ def gera_table_json_builder(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_#{data_hash['table'].downcase}.json.jbuilder"
 
   # Cria campo Permit para ser substituido no Controller
-  permit = ""
-  data_hash['fields'].each do |field|
-    if permit == ""
-      permit += ":#{field['name']}"
-    else
-      permit += ", :#{field['name']}"
-    end
-  end
+  permit = gera_permit(data_hash['fields'])
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/_table.json.jbuilder")
@@ -291,6 +282,13 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
         field_list = field_list.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
         field_list = field_list.gsub('##{select_show}', field['select_show'])   if field['select_show'] != nil      
+      when 'multselect'
+        field_list += File.read("models/#{@model}/_form_field_multselect.html")
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{select_table}', field['select_table'])     if field['select_table'] != nil        
+        field_list = field_list.gsub('##{select_id}', field['select_id'])           if field['select_id'] != nil        
+        field_list = field_list.gsub('##{select_show}', field['select_show'])       if field['select_show'] != nil      
+        field_list = field_list.gsub('##{field_name_plural}', field['name_plural']) if field['name_plural'] != nil      
       when 'float'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
@@ -407,6 +405,21 @@ def gera_summernote_list(fields)
 end
 
 ####################################################################################################
+def gera_dual_select(fields)
+  dual_select = ""
+  fields.each do |field|
+    case field['type'].downcase
+      when 'multselect'
+        dual_select += File.read("models/#{@model}/jquery_dual_select")
+        break
+        #dual_select = dual_select.gsub('##{field_name}', field['name'])
+      else 
+    end
+  end
+  return dual_select
+end
+
+####################################################################################################
 def gera_has_many_list(data_hash)
   has_many_list = ""
   return has_many_list if data_hash['has_many'] == nil 
@@ -417,6 +430,20 @@ def gera_has_many_list(data_hash)
     has_many_list = has_many_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
   end
   return has_many_list
+end
+
+####################################################################################################
+def gera_has_and_belongs_to_many_list(data_hash)
+  has_and_belongs_to_many_list = ""
+  return has_and_belongs_to_many_list if data_hash['has_and_belongs_to_many'] == nil 
+
+  has_manies = data_hash['has_and_belongs_to_many'].split(',')
+  has_manies.each do |has_and_belongs_to_many|
+    puts has_and_belongs_to_many
+    has_and_belongs_to_many_list += File.read("models/#{@model}/model_has_and_belongs_to_many.rb")
+    has_and_belongs_to_many_list = has_and_belongs_to_many_list.gsub('##{has_and_belongs_to_many}', has_and_belongs_to_many.gsub(/\s+/, ""))
+  end
+  return has_and_belongs_to_many_list
 end
 
 ####################################################################################################
@@ -485,6 +512,16 @@ def gera_policy(data_hash)
 end
 
 ####################################################################################################
+def gera_permit(fields)
+  permit = ""
+  fields.each do |field|
+    permit += ", " if permit != ""
+    permit += field['type'].downcase == 'multselect' ? "#{field['name']}_ids: []" : ":#{field['name']}"
+  end  
+  return permit
+end
+
+####################################################################################################
 def grava(fileout,conteudo)
   FileUtils.rm(fileout) if File.exist?(fileout)
   File.open(fileout, "w+") do |f|
@@ -499,6 +536,12 @@ def add_summernote_files(data_hash)
   add_in_file(data_hash, 'app/assets/javascripts/application.js', '//= require summernote/summernote.min.js', 'end')
   add_in_file(data_hash, 'app/assets/stylesheets/application.css', '//= require summernote/summernote-bs3.css', 'end')
   add_in_file(data_hash, 'app/assets/stylesheets/application.css', '//= require summernote/summernote.css', 'end')
+end
+
+####################################################################################################
+def add_dual_select_files(data_hash)
+  add_in_file(data_hash, 'app/assets/javascripts/application.js',  '//= require dualListbox/jquery.bootstrap-duallistbox.js', 'end')
+  add_in_file(data_hash, 'app/assets/stylesheets/application.css', '//= require dualListbox/bootstrap-duallistbox.min.css', 'end')
 end
 
 ####################################################################################################
