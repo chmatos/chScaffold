@@ -1,0 +1,5 @@
+      
+          $('.dual_select').bootstrapDualListbox({
+            selectorMinimalHeight: 160
+          });
+         
