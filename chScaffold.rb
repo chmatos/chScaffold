@@ -272,6 +272,7 @@ def gera_field_list(fields)
       when 'enum'
         field_list += File.read("models/#{@model}/_form_field_enum.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_name_plural}', field['name_plural'])
       when 'integer'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
@@ -288,7 +289,7 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{select_table}', field['select_table'])     if field['select_table'] != nil        
         field_list = field_list.gsub('##{select_id}', field['select_id'])           if field['select_id'] != nil        
         field_list = field_list.gsub('##{select_show}', field['select_show'])       if field['select_show'] != nil      
-        field_list = field_list.gsub('##{field_name_plural}', field['name_plural']) if field['name_plural'] != nil      
+        field_list = field_list.gsub('##{field_name_plural}', field['name_plural'])
       when 'float'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
