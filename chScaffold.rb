@@ -29,6 +29,8 @@ def gera_controller(data_hash)
   mkdir("#{@directory_output}/app/controllers/.")
   fileout = "#{@directory_output}/app/controllers/#{data_hash['plural'].downcase}_controller.rb"
 
+  return if data_hash['files'] != nil and data_hash['files'][0]['controller'] != nil and data_hash['files'][0]['controller'] == 'skip_if_exist' and File.exist?(fileout)
+
   # Cria campo Permit para ser substituido no Controller
   permit = ""
   data_hash['fields'].each do |field|
@@ -53,6 +55,8 @@ def gera_helper(data_hash)
   mkdir("#{@directory_output}/app/helpers/.")
   fileout = "#{@directory_output}/app/helpers/#{data_hash['plural'].downcase}_helper.rb"
 
+  return if data_hash['files'] != nil and data_hash['files'][0]['helper'] != nil and data_hash['files'][0]['helper'] == 'skip_if_exist' and File.exist?(fileout)
+
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/helper.rb")
   conteudo = substitui_campos(conteudo, data_hash)
@@ -65,6 +69,8 @@ def gera_model(data_hash)
   # Gera diretorio
   mkdir("#{@directory_output}/app/models/.")
   fileout = "#{@directory_output}/app/models/#{data_hash['table'].downcase}.rb"
+
+  return if data_hash['files'] != nil and data_hash['files'][0]['model'] != nil and data_hash['files'][0]['model'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Gera listas para substituicao
   has_many_list = gera_has_many_list(data_hash)
@@ -98,6 +104,8 @@ def gera_form(data_hash)
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_form.html.erb"
 
+  return if data_hash['files'] != nil and data_hash['files'][0]['form'] != nil and data_hash['files'][0]['form'] == 'skip_if_exist' and File.exist?(fileout)
+
   # Cria field_list para ser substituido no _form
   field_list = gera_field_list(data_hash['fields']) 
   datapicker_list = gera_datapicker_list(data_hash['fields'])
@@ -123,6 +131,8 @@ def gera_new(data_hash)
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/new.html.erb"
 
+  return if data_hash['files'] != nil and data_hash['files'][0]['new'] != nil and data_hash['files'][0]['new'] == 'skip_if_exist' and File.exist?(fileout)
+
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/new.html")
   conteudo = substitui_campos(conteudo, data_hash)
@@ -135,6 +145,8 @@ def gera_show(data_hash)
   # Gera diretorio
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/show.html.erb"
+
+  return if data_hash['files'] != nil and data_hash['files'][0]['show'] != nil and data_hash['files'][0]['show'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/show.html")
@@ -149,6 +161,8 @@ def gera_edit(data_hash)
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/edit.html.erb"
 
+  return if data_hash['files'] != nil and data_hash['files'][0]['edit'] != nil and data_hash['files'][0]['edit'] == 'skip_if_exist' and File.exist?(fileout)
+
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/edit.html")
   conteudo = substitui_campos(conteudo, data_hash)
@@ -161,6 +175,8 @@ def gera_index(data_hash)
   # Gera diretorio
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/index.html.erb"
+
+  return if data_hash['files'] != nil and data_hash['files'][0]['index'] != nil and data_hash['files'][0]['index'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Cria field_list para ser substituido no _index
   header_field_list = gera_header_field_list(data_hash['fields']) 
@@ -180,6 +196,8 @@ def gera_index_partial(data_hash)
   # Gera diretorio
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_index.html.erb"
+
+  return if data_hash['files'] != nil and data_hash['files'][0]['_index'] != nil and data_hash['files'][0]['_index'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Cria field_list para ser substituido no _index
   header_field_list = gera_header_field_list(data_hash['fields'], partial: true) 
@@ -468,7 +486,6 @@ end
 
 ####################################################################################################
 def grava(fileout,conteudo)
-  # Grava Controller
   FileUtils.rm(fileout) if File.exist?(fileout)
   File.open(fileout, "w+") do |f|
     f.write(conteudo)
@@ -602,16 +619,16 @@ else
   @model = data_hash['model']
 end
 
-gera_controller(data_hash)
-gera_helper(data_hash)
-gera_model(data_hash)
-gera_policy(data_hash)
-gera_form(data_hash)
-gera_new(data_hash)
-gera_show(data_hash)
-gera_edit(data_hash)
-gera_index(data_hash)
-gera_index_partial(data_hash)
+gera_controller(data_hash)    if data_hash['files'] == nil or data_hash['files'][0]['controller']  == nil or (data_hash['files'][0]['controller']  != nil and data_hash['files'][0]['controller']  != 'skip')
+gera_helper(data_hash)        if data_hash['files'] == nil or data_hash['files'][0]['helper']      == nil or (data_hash['files'][0]['helper']      != nil and data_hash['files'][0]['helper']      != 'skip')
+gera_model(data_hash)         if data_hash['files'] == nil or data_hash['files'][0]['model']       == nil or (data_hash['files'][0]['model']       != nil and data_hash['files'][0]['model']       != 'skip')
+gera_policy(data_hash)        if data_hash['files'] == nil or data_hash['files'][0]['policy']      == nil or (data_hash['files'][0]['policy']      != nil and data_hash['files'][0]['policy']      != 'skip')
+gera_form(data_hash)          if data_hash['files'] == nil or data_hash['files'][0]['_form']       == nil or (data_hash['files'][0]['_form']       != nil and data_hash['files'][0]['_form']       != 'skip')
+gera_new(data_hash)           if data_hash['files'] == nil or data_hash['files'][0]['new']         == nil or (data_hash['files'][0]['new']         != nil and data_hash['files'][0]['new']         != 'skip')
+gera_show(data_hash)          if data_hash['files'] == nil or data_hash['files'][0]['show']        == nil or (data_hash['files'][0]['show']        != nil and data_hash['files'][0]['show']        != 'skip')
+gera_edit(data_hash)          if data_hash['files'] == nil or data_hash['files'][0]['edit']        == nil or (data_hash['files'][0]['edit']        != nil and data_hash['files'][0]['edit']        != 'skip')
+gera_index(data_hash)         if data_hash['files'] == nil or data_hash['files'][0]['index']       == nil or (data_hash['files'][0]['index']       != nil and data_hash['files'][0]['index']       != 'skip')
+gera_index_partial(data_hash) if data_hash['files'] == nil or data_hash['files'][0]['_index']      == nil or (data_hash['files'][0]['_index']      != nil and data_hash['files'][0]['_index']      != 'skip')
 gera_table_json_builder(data_hash)
 gera_index_json_builder(data_hash)
 gera_show_json_builder(data_hash)
