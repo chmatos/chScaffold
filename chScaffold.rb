@@ -33,11 +33,14 @@ def gera_controller(data_hash)
 
   # Cria campo Permit para ser substituido no Controller
   permit = gera_permit(data_hash['fields'])
+  nested_build_children = gera_nested_build_children(data_hash)
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/controller.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
+  conteudo = conteudo.gsub('##{nested_build_children}', nested_build_children)
+  conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
 end
@@ -453,13 +456,14 @@ end
 ####################################################################################################
 def gera_nested_list(data_hash)
   nested_list = ""
-  return nested_list if data_hash['nested_forms'] == nil 
+  return nested_list if data_hash['nested_form'] == nil 
 
-  has_manies = data_hash['nested_forms'].split(',')
-  has_manies.each do |has_many|
+  #has_manies = data_hash['nested_form'].split(',')
+  #has_manies.each do |has_many|
     nested_list += File.read("models/#{@model}/model_nested.rb")
-    nested_list = nested_list.gsub('##{nested_table_plural}', has_many.gsub(/\s+/, ""))
-  end
+    nested_list = nested_list.gsub('##{nested_table_plural}', data_hash['nested_form']['table_plural'])
+    #nested_list = nested_list.gsub('##{nested_table_plural}', has_many.gsub(/\s+/, ""))
+  #end
   return nested_list
 end
 
@@ -550,6 +554,22 @@ def gera_permit(fields)
     permit += field['type'].downcase == 'multselect' ? "#{field['name']}_ids: []" : ":#{field['name']}"
   end  
   return permit
+end
+
+####################################################################################################
+def gera_nested_build_children(data_hash)
+  nested_build_children = ""
+  return nested_build_children if data_hash['nested_form'] == nil 
+
+  #itens = data_hash['nested_form'].split(',')
+  #itens.each do |item|
+    nested_build_children += File.read("models/#{@model}/controller_nested.rb")
+    nested_build_children = nested_build_children.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])
+    nested_build_children = nested_build_children.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])
+    nested_build_children = nested_build_children.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])
+    #nested_build_children = nested_build_children.gsub('##{belongs_to}', item.gsub(/\s+/, ""))
+  #end
+  return nested_build_children
 end
 
 ####################################################################################################

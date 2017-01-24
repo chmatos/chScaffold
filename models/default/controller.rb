@@ -3,32 +3,25 @@ class ##{plural.camelize}Controller < ApplicationController
   before_action :authenticate_user!
   before_filter :ensure_signup_complete, only: [:new, :create, :update, :destroy] 
 
-  # GET /questionarios
-  # GET /questionarios.json
   def index
     authorize ##{table.camelize}
     @##{plural.downcase} = ##{table.capitalize}.search(params[:search])
   end
 
-  # GET /##{plural.downcase}/1
-  # GET /##{plural.downcase}/1.json
   def show
     authorize @##{table.downcase}
   end
 
-  # GET /##{plural.downcase}/new
   def new
     authorize ##{table.camelize}
     @##{table.downcase} = ##{table.capitalize}.new
+    ##{nested_build_children}
   end
 
-  # GET /##{plural.downcase}/1/edit
   def edit
     authorize @##{table.downcase}
   end
 
-  # POST /##{plural.downcase}
-  # POST /##{plural.downcase}.json
   def create
     @##{table.downcase} = ##{table.capitalize}.new(##{table.downcase}_params)
     authorize @##{table.downcase}
@@ -48,8 +41,6 @@ class ##{plural.camelize}Controller < ApplicationController
     end
   end
 
-  # PATCH/PUT /##{plural.downcase}/1
-  # PATCH/PUT /##{plural.downcase}/1.json
   def update
     authorize @##{table.downcase}
     respond_to do |format|
@@ -67,8 +58,6 @@ class ##{plural.camelize}Controller < ApplicationController
     end
   end
 
-  # DELETE /##{plural.downcase}/1
-  # DELETE /##{plural.downcase}/1.json
   def destroy
     authorize @##{table.downcase}
     @##{table.downcase}.destroy
