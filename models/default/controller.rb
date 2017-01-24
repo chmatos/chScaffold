@@ -20,6 +20,7 @@ class ##{plural.camelize}Controller < ApplicationController
 
   def edit
     authorize @##{table.downcase}
+    ##{nested_build_children}
   end
 
   def create

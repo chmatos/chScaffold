@@ -602,10 +602,13 @@ end
 def gera_render_nested(data_hash, entrada)
   return entrada if data_hash['nested_form'] == nil
 
+  header_field_list = gera_header_field_list(data_hash['nested_form']['fields'])  
+
   saida = File.read("models/#{@model}/render_nested.html")
   saida = saida.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
   saida = saida.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
   saida = saida.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
+  saida = saida.gsub('##{header_field_list}',          header_field_list)   
 
   return saida
 end
