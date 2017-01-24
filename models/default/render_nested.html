@@ -1,0 +1,4 @@
+          
+          <%= f.fields_for :##{plural.downcase} do |builder| %>
+            <%= render "##{nested_form.table_singular}_fields", :f => builder %>
+          <% end %>                    

@@ -113,7 +113,8 @@ def gera_form(data_hash)
   datapicker_list = gera_datapicker_list(data_hash['fields'])
   summernote_list = gera_summernote_list(data_hash['fields'])
   dual_select = gera_dual_select(data_hash['fields'])
-  render_index_list = gera_render_index(data_hash)
+  render_list = gera_render_index(data_hash)
+  render_list = gera_render_nested(data_hash, render_list)
 
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/_form.html")
@@ -121,7 +122,7 @@ def gera_form(data_hash)
   conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
   conteudo = conteudo.gsub('##{dual_select}', dual_select)
-  conteudo = conteudo.gsub('##{render_index_list}', render_index_list)
+  conteudo = conteudo.gsub('##{render_index_list}', render_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
   add_summernote_files(data_hash)  if summernote_list != ''
@@ -511,6 +512,7 @@ end
 def gera_render_index(data_hash)
   render_index_list = ""
   return render_index_list if data_hash['has_many'] == nil 
+  return render_index_list if data_hash['nested_form'] != nil
 
   has_many_tables = data_hash['has_many'].split(',')
   has_many_tables.each do |has_many_table|
@@ -518,6 +520,18 @@ def gera_render_index(data_hash)
     render_index_list = render_index_list.gsub('##{has_many_table}', has_many_table.gsub(/\s+/, ""))
   end
   return render_index_list
+end
+
+####################################################################################################
+def gera_render_nested(data_hash, entrada)
+  return entrada if data_hash['nested_form'] == nil
+
+  saida = File.read("models/#{@model}/render_nested.html")
+  saida = saida.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
+  saida = saida.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
+  saida = saida.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
+
+  return saida
 end
 
 ####################################################################################################
@@ -564,9 +578,9 @@ def gera_nested_build_children(data_hash)
   #itens = data_hash['nested_form'].split(',')
   #itens.each do |item|
     nested_build_children += File.read("models/#{@model}/controller_nested.rb")
-    nested_build_children = nested_build_children.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])
-    nested_build_children = nested_build_children.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])
-    nested_build_children = nested_build_children.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])
+    nested_build_children = nested_build_children.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
+    nested_build_children = nested_build_children.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
+    nested_build_children = nested_build_children.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
     #nested_build_children = nested_build_children.gsub('##{belongs_to}', item.gsub(/\s+/, ""))
   #end
   return nested_build_children
