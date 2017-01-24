@@ -66,10 +66,12 @@ def gera_model(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['model'] != nil and data_hash['files'][0]['model'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Gera listas para substituicao
-  has_many_list = gera_has_many_list(data_hash)
-  belongs_to_list = gera_belongs_to_list(data_hash)
-  has_and_belongs_to_many_list = gera_has_and_belongs_to_many_list(data_hash)
-  enum_list = gera_enum_list(data_hash)
+  has_many_list                 = gera_has_many_list(data_hash)
+  has_many_destroy_list         = gera_has_many_destroy_list(data_hash)
+  belongs_to_list               = gera_belongs_to_list(data_hash)
+  has_and_belongs_to_many_list  = gera_has_and_belongs_to_many_list(data_hash)
+  enum_list                     = gera_enum_list(data_hash)
+  nested_list                   = gera_nested_list(data_hash)
 
   # Cria campo Search para ser substituido no Model
   search = ""
@@ -85,6 +87,8 @@ def gera_model(data_hash)
   conteudo = File.read("models/#{@model}/model.rb")
   conteudo = conteudo.gsub('##{search}', search) if search != ""
   conteudo = conteudo.gsub('##{has_many_list}', has_many_list) 
+  conteudo = conteudo.gsub('##{has_many_destroy_list}', has_many_destroy_list) 
+  conteudo = conteudo.gsub('##{nested_list}', nested_list) 
   conteudo = conteudo.gsub('##{belongs_to_list}', belongs_to_list) 
   conteudo = conteudo.gsub('##{has_and_belongs_to_many_list}', has_and_belongs_to_many_list) 
   conteudo = conteudo.gsub('##{enum_list}', enum_list) 
@@ -431,6 +435,32 @@ def gera_has_many_list(data_hash)
     has_many_list = has_many_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
   end
   return has_many_list
+end
+
+####################################################################################################
+def gera_has_many_destroy_list(data_hash)
+  has_many_destroy_list = ""
+  return has_many_destroy_list if data_hash['has_many_destroy'] == nil 
+
+  has_manies = data_hash['has_many_destroy'].split(',')
+  has_manies.each do |has_many|
+    has_many_destroy_list += File.read("models/#{@model}/model_has_many_destroy.rb")
+    has_many_destroy_list = has_many_destroy_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
+  end
+  return has_many_destroy_list
+end
+
+####################################################################################################
+def gera_nested_list(data_hash)
+  nested_list = ""
+  return nested_list if data_hash['nested_forms'] == nil 
+
+  has_manies = data_hash['nested_forms'].split(',')
+  has_manies.each do |has_many|
+    nested_list += File.read("models/#{@model}/model_nested.rb")
+    nested_list = nested_list.gsub('##{nested_table_plural}', has_many.gsub(/\s+/, ""))
+  end
+  return nested_list
 end
 
 ####################################################################################################
