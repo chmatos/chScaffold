@@ -4,7 +4,9 @@
               <table class="table table-striped table-bordered table-hover table-condensed">
                 <tr>
                   ##{header_field_list}
-                  <th></th>
+                  <% if !is_show %>
+                    <th></th>
+                  <% end %>
                 </tr>
 			          <%= f.fields_for :##{nested_form.table_plural} do |builder| %>
 			            <%= render "##{nested_form.table_singular}_fields", :f => builder %>
