@@ -535,10 +535,13 @@ def gera_nested_model(data_hash)
   nested_list = ""
   return nested_list if data_hash['nested_form'] == nil 
 
+  nested_noblank = gera_nested_noblank(data_hash)
+
   #has_manies = data_hash['nested_form'].split(',')
   #has_manies.each do |has_many|
     nested_list += File.read("models/#{@model}/model_nested.rb")
     nested_list = nested_list.gsub('##{nested_table_plural}', data_hash['nested_form']['table_plural'])
+    nested_list = nested_list.gsub('##{nested_noblank}', nested_noblank)
     #nested_list = nested_list.gsub('##{nested_table_plural}', has_many.gsub(/\s+/, ""))
   #end
   return nested_list
@@ -657,6 +660,18 @@ def gera_permit(data_hash)
   end
 
   return permit
+end
+
+####################################################################################################
+def gera_nested_noblank(data_hash)
+  saida = ""
+  data_hash['nested_form']['fields'].each do |field|
+    next if field['noblank'] == nil or field['noblank'].downcase != 'y'
+    saida += saida == '' ? ":reject_if => lambda { |a| a[:#{field['name']}].blank? " : "|| a[:#{field['name']}].blank? "
+  end  
+
+  saida += '},' if saida != ''
+  return saida
 end
 
 ####################################################################################################
