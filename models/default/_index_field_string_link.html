@@ -1,2 +1,8 @@
                     
-                    <td align="##{align}"><%= link_to ##{table.downcase}.##{field_name}, edit_##{table.downcase}_path(##{table.downcase}, :parent_id => @parent.id, :parent_class => @parent.class.name.downcase.to_s) %></td>
+                    <td align="##{align}">
+                      <% if @parent != nil %>
+                        <%= link_to ##{table.downcase}.##{field_name}, edit_##{table.downcase}_path(##{table.downcase}, :parent_action => 'edit', :parent_id => @parent.id, :parent_class => @parent.class.name.downcase.to_s) %>
+                      <% else %>
+                        <%= link_to ##{table.downcase}.##{field_name}, edit_##{table.downcase}_path(##{table.downcase}, :parent_action => 'index', :parent_id => 0, :parent_class => ##{table.downcase}.class.name.downcase.to_s) %>
+                      <% end %>
+                    </td>
