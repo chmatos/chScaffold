@@ -1,3 +1,5 @@
                     
                     <% texto = raw ##{table.downcase}.##{field_name} %>
-                    <td align="##{align}"><%= link_to texto, edit_##{table.downcase}_path(##{table.downcase}, :parent_id => @parent.id, :parent_class => @parent.class.name.downcase.to_s) %></td>
+                    <td align="##{align}">
+                      <%= link_to texto, edit_##{table.downcase}_path(##{table.downcase}, :parent_action => params['action'], :parent_id => params['id'], :parent_controller => params['controller']) %>
+                    </td>

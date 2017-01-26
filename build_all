@@ -1,0 +1,5 @@
+ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/questionario
+ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/pergunta
+ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/resposta
+ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/criterio
+ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/perfil

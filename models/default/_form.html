@@ -24,12 +24,18 @@
                 <% else %>
                   <%= submit_tag t('Save'), :class => 'btn btn-primary btn-xs' %>
                 <% end %>
-                <a><%= link_to t('Exit'), (controller: params[:parent_class].pluralize, action: 'edit', id: params[:parent_id].to_i), :class => 'btn btn-white btn-xs' %></a>
+                <% if params[:parent_controller].present? %>
+                  <a><%= link_to t('Exit'), { controller: params[:parent_controller], action: params[:parent_action], id: params[:parent_id].to_i }, class: 'btn btn-white btn-xs' %></a>
+                <% else %>
+                  <a><%= link_to t('Exit'), { controller: params[:controller], action: 'index' }, class: 'btn btn-white btn-xs' %></a>
+                <% end %>
               </td>
             </table>
           </div>
 
-          <%= hidden_field_tag :parent_class, params[:parent_class] if params[:parent_class].present? %>
+          <%= hidden_field_tag :parent_controller, params[:parent_controller] if params[:parent_controller].present? %>
+          <%= hidden_field_tag :parent_action, params[:parent_action] if params[:parent_action].present? %>
+          <%= hidden_field_tag :parent_id, params[:parent_id] if params[:parent_id].present? %>
 
           <div class="ibox-content">
             ##{field_list}
