@@ -13,5 +13,5 @@
 			          <% end %>    
               </table>
 
-            <%#= link_to t('Add'), new_##{table.downcase}_path(:parent_id => @parent.id, :parent_class => @parent.class.name.downcase.to_s), :class => 'btn btn-primary btn-xs' %>
+            <%#= link_to t('Add'), new_##{table.downcase}_path(:parent_action => params['action'], :parent_id => params['id'], :parent_controller => params['controller']), :class => 'btn btn-primary btn-xs' %>
           </div>						                        
