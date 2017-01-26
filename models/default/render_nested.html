@@ -1,0 +1,17 @@
+          
+          <div class="ibox-content">
+            <h3><%= t('##{nested_form.table_plural}'.camelize) %></h3>
+              <table class="table table-striped table-bordered table-hover table-condensed">
+                <tr>
+                  ##{header_field_list}
+                  <% if !is_show %>
+                    <th></th>
+                  <% end %>
+                </tr>
+			          <%= f.fields_for :##{nested_form.table_plural} do |builder| %>
+			            <%= render "##{nested_form.table_singular}_fields", :f => builder %>
+			          <% end %>    
+              </table>
+
+            <%#= link_to t('Add'), new_##{table.downcase}_path(:parent_id => @parent.id, :parent_class => @parent.class.name.downcase.to_s), :class => 'btn btn-primary btn-xs' %>
+          </div>						                        

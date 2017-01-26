@@ -1,0 +1,11 @@
+
+                    <tr>
+                      ##{nested_field_list}
+                      <td>
+                        <% if !is_show %>
+                          <%= f.check_box :_destroy %>
+                          <%= f.label :_destroy, "Remove" %>
+                        <% end %>
+                      </td>
+                    </tr>
+                    

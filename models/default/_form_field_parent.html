@@ -1,4 +1,9 @@
               
+            <% if params[:parent_id].present? %>
               <%= f.hidden_field :##{field_name}, :value => params[:parent_id] %>
+            <% else %>
+              <%= f.hidden_field :##{field_name} %>
+            <% end %>              
+              <%#= f.hidden_field :##{field_name}, :value => params[:parent_id] %>
               <%= hidden_field_tag :parent_id, params[:parent_id] %>
               

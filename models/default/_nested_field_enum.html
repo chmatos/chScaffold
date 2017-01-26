@@ -1,0 +1,6 @@
+              
+                      <%# Block of ##{field_name} %>
+                      <td>
+                        <%= f.select(:##{field_name}, ##{table.camelize}.##{field_name_plural}.keys.map {|##{field_name}| [##{field_name}.titleize,##{field_name}]}, { class: 'form-control s-m' }, disabled: is_show) %>
+                      </td>
+              

@@ -32,12 +32,15 @@ def gera_controller(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['controller'] != nil and data_hash['files'][0]['controller'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Cria campo Permit para ser substituido no Controller
-  permit = gera_permit(data_hash['fields'])
+  permit = gera_permit(data_hash)
+  nested_build_children = gera_nested_build_children(data_hash)
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/controller.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
+  conteudo = conteudo.gsub('##{nested_build_children}', nested_build_children)
+  conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
 end
@@ -66,10 +69,12 @@ def gera_model(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['model'] != nil and data_hash['files'][0]['model'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Gera listas para substituicao
-  has_many_list = gera_has_many_list(data_hash)
-  belongs_to_list = gera_belongs_to_list(data_hash)
-  has_and_belongs_to_many_list = gera_has_and_belongs_to_many_list(data_hash)
-  enum_list = gera_enum_list(data_hash)
+  has_many_list                 = gera_has_many_list(data_hash)
+  has_many_destroy_list         = gera_has_many_destroy_list(data_hash)
+  belongs_to_list               = gera_belongs_to_list(data_hash)
+  has_and_belongs_to_many_list  = gera_has_and_belongs_to_many_list(data_hash)
+  enum_list                     = gera_enum_list(data_hash)
+  nested_list                   = gera_nested_model(data_hash)
 
   # Cria campo Search para ser substituido no Model
   search = ""
@@ -85,6 +90,8 @@ def gera_model(data_hash)
   conteudo = File.read("models/#{@model}/model.rb")
   conteudo = conteudo.gsub('##{search}', search) if search != ""
   conteudo = conteudo.gsub('##{has_many_list}', has_many_list) 
+  conteudo = conteudo.gsub('##{has_many_destroy_list}', has_many_destroy_list) 
+  conteudo = conteudo.gsub('##{nested_list}', nested_list) 
   conteudo = conteudo.gsub('##{belongs_to_list}', belongs_to_list) 
   conteudo = conteudo.gsub('##{has_and_belongs_to_many_list}', has_and_belongs_to_many_list) 
   conteudo = conteudo.gsub('##{enum_list}', enum_list) 
@@ -106,7 +113,8 @@ def gera_form(data_hash)
   datapicker_list = gera_datapicker_list(data_hash['fields'])
   summernote_list = gera_summernote_list(data_hash['fields'])
   dual_select = gera_dual_select(data_hash['fields'])
-  render_index_list = gera_render_index(data_hash)
+  render_list = gera_render_index(data_hash)
+  render_list = gera_render_nested(data_hash, render_list)
 
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/_form.html")
@@ -114,7 +122,7 @@ def gera_form(data_hash)
   conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
   conteudo = conteudo.gsub('##{dual_select}', dual_select)
-  conteudo = conteudo.gsub('##{render_index_list}', render_index_list)
+  conteudo = conteudo.gsub('##{render_index_list}', render_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
   add_summernote_files(data_hash)  if summernote_list != ''
@@ -211,13 +219,35 @@ def gera_index_partial(data_hash)
 end
 
 ####################################################################################################
+def gera_nested(data_hash)
+  # Gera diretorio
+  mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
+  fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_#{data_hash['nested_form']['table_singular'].downcase}_fields.html.erb"
+
+  return if data_hash['files'] != nil and data_hash['files'][0]['index'] != nil and data_hash['files'][0]['nested'] == 'skip_if_exist' and File.exist?(fileout)
+
+  # Cria field_list para ser substituido no _index
+  header_field_list = gera_header_field_list       (data_hash['nested_form']['fields']) 
+  nested_field_list = gera_nested_detail_field_list(data_hash['nested_form']['fields']) 
+
+
+  # Carrega modelo e substitui campos
+  conteudo = File.read("models/#{@model}/_nested.html")
+  conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
+  conteudo = conteudo.gsub('##{nested_field_list}', nested_field_list) 
+  conteudo = substitui_campos(conteudo, data_hash)
+
+  grava(fileout,conteudo)
+end
+
+####################################################################################################
 def gera_table_json_builder(data_hash)
   # Gera diretorio
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_#{data_hash['table'].downcase}.json.jbuilder"
 
   # Cria campo Permit para ser substituido no Controller
-  permit = gera_permit(data_hash['fields'])
+  permit = gera_permit(data_hash)
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/_table.json.jbuilder")
@@ -305,6 +335,60 @@ def gera_field_list(fields)
     end
   end
   return field_list
+end
+
+####################################################################################################
+def gera_nested_detail_field_list(fields)
+  saida = ""
+  fields.each do |field|
+    case field['type'].downcase
+      #when 'hidden'
+      #  saida += File.read("models/#{@model}/_form_field_hidden.html")
+      #  saida = saida.gsub('##{field_name}', field['name'])
+      #  saida = saida.gsub('##{field_value}', field['value'])            
+      #when 'parent'
+      #  saida += File.read("models/#{@model}/_form_field_parent.html")    
+      #  saida = saida.gsub('##{field_name}', field['name'])
+      when 'string'
+        saida += File.read("models/#{@model}/_nested_field.html")
+        saida = saida.gsub('##{field_name}', field['name'])
+        saida = saida.gsub('##{field_type}', 'text_field')
+      when 'enum'
+        saida += File.read("models/#{@model}/_nested_field_enum.html")
+        saida = saida.gsub('##{field_name}', field['name'])
+        saida = saida.gsub('##{field_name_plural}', field['name_plural'])
+      when 'integer'
+        saida += File.read("models/#{@model}/_nested_field.html")
+        saida = saida.gsub('##{field_name}', field['name'])
+        saida = saida.gsub('##{field_type}', 'number_field')           
+      when 'select'
+        saida += File.read("models/#{@model}/_nested_field_collect_select.html")
+        saida = saida.gsub('##{field_name}', field['name'])
+        saida = saida.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
+        saida = saida.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
+        saida = saida.gsub('##{select_show}', field['select_show'])   if field['select_show'] != nil      
+      #when 'multselect'
+      #  saida += File.read("models/#{@model}_nested_field_multselect.html")
+      #  saida = saida.gsub('##{field_name}', field['name'])
+      #  saida = saida.gsub('##{select_table}', field['select_table'])     if field['select_table'] != nil        
+      #  saida = saida.gsub('##{select_id}', field['select_id'])           if field['select_id'] != nil        
+      #  saida = saida.gsub('##{select_show}', field['select_show'])       if field['select_show'] != nil      
+      #  saida = saida.gsub('##{field_name_plural}', field['name_plural'])
+      when 'float'
+        saida += File.read("models/#{@model}/_nested_field.html")
+        saida = saida.gsub('##{field_name}', field['name'])
+        saida = saida.gsub('##{field_type}', 'number_field')      
+      when 'date','datetime'
+        saida += File.read("models/#{@model}/_nested_field_date.html")
+        saida = saida.gsub('##{field_name}', field['name'])
+        saida = saida.gsub('##{field_type}', 'text_field')
+      when 'blob'
+        saida += File.read("models/#{@model}/_nested_field_blob.html")
+        saida = saida.gsub('##{field_name}', field['name'])    
+      else 
+    end
+  end
+  return saida
 end
 
 ####################################################################################################
@@ -434,6 +518,36 @@ def gera_has_many_list(data_hash)
 end
 
 ####################################################################################################
+def gera_has_many_destroy_list(data_hash)
+  has_many_destroy_list = ""
+  return has_many_destroy_list if data_hash['has_many_destroy'] == nil 
+
+  has_manies = data_hash['has_many_destroy'].split(',')
+  has_manies.each do |has_many|
+    has_many_destroy_list += File.read("models/#{@model}/model_has_many_destroy.rb")
+    has_many_destroy_list = has_many_destroy_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
+  end
+  return has_many_destroy_list
+end
+
+####################################################################################################
+def gera_nested_model(data_hash)
+  nested_list = ""
+  return nested_list if data_hash['nested_form'] == nil 
+
+  nested_noblank = gera_nested_noblank(data_hash)
+
+  #has_manies = data_hash['nested_form'].split(',')
+  #has_manies.each do |has_many|
+    nested_list += File.read("models/#{@model}/model_nested.rb")
+    nested_list = nested_list.gsub('##{nested_table_plural}', data_hash['nested_form']['table_plural'])
+    nested_list = nested_list.gsub('##{nested_noblank}', nested_noblank)
+    #nested_list = nested_list.gsub('##{nested_table_plural}', has_many.gsub(/\s+/, ""))
+  #end
+  return nested_list
+end
+
+####################################################################################################
 def gera_has_and_belongs_to_many_list(data_hash)
   has_and_belongs_to_many_list = ""
   return has_and_belongs_to_many_list if data_hash['has_and_belongs_to_many'] == nil 
@@ -477,6 +591,7 @@ end
 def gera_render_index(data_hash)
   render_index_list = ""
   return render_index_list if data_hash['has_many'] == nil 
+  return render_index_list if data_hash['nested_form'] != nil
 
   has_many_tables = data_hash['has_many'].split(',')
   has_many_tables.each do |has_many_table|
@@ -484,6 +599,21 @@ def gera_render_index(data_hash)
     render_index_list = render_index_list.gsub('##{has_many_table}', has_many_table.gsub(/\s+/, ""))
   end
   return render_index_list
+end
+
+####################################################################################################
+def gera_render_nested(data_hash, entrada)
+  return entrada if data_hash['nested_form'] == nil
+
+  header_field_list = gera_header_field_list(data_hash['nested_form']['fields'])  
+
+  saida = File.read("models/#{@model}/render_nested.html")
+  saida = saida.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
+  saida = saida.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
+  saida = saida.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
+  saida = saida.gsub('##{header_field_list}',          header_field_list)   
+
+  return saida
 end
 
 ####################################################################################################
@@ -513,13 +643,51 @@ def gera_policy(data_hash)
 end
 
 ####################################################################################################
-def gera_permit(fields)
+def gera_permit(data_hash)
   permit = ""
-  fields.each do |field|
+  data_hash['fields'].each do |field|
     permit += ", " if permit != ""
     permit += field['type'].downcase == 'multselect' ? "#{field['name']}_ids: []" : ":#{field['name']}"
   end  
+
+  if data_hash['nested_form'] != nil
+    permit += ", #{data_hash['nested_form']['table_plural']}_attributes: [:id"
+    data_hash['nested_form']['fields'].each do |field|
+      permit += ", " if permit != ""
+      permit += ":#{field['name']}"
+    end     
+    permit += ", :_destroy]"
+  end
+
   return permit
+end
+
+####################################################################################################
+def gera_nested_noblank(data_hash)
+  saida = ""
+  data_hash['nested_form']['fields'].each do |field|
+    next if field['noblank'] == nil or field['noblank'].downcase != 'y'
+    saida += saida == '' ? ":reject_if => lambda { |a| a[:#{field['name']}].blank? " : "|| a[:#{field['name']}].blank? "
+  end  
+
+  saida += '},' if saida != ''
+  return saida
+end
+
+####################################################################################################
+def gera_nested_build_children(data_hash)
+  nested_build_children = ""
+  return nested_build_children if data_hash['nested_form'] == nil 
+
+  #itens = data_hash['nested_form'].split(',')
+  #itens.each do |item|
+    nested_build_children += File.read("models/#{@model}/controller_nested.rb")
+    nested_build_children = nested_build_children.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
+    nested_build_children = nested_build_children.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
+    nested_build_children = nested_build_children.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
+    #nested_build_children = nested_build_children.gsub('##{belongs_to}', item.gsub(/\s+/, ""))
+  #end
+  return nested_build_children
 end
 
 ####################################################################################################
@@ -663,16 +831,17 @@ else
   @model = data_hash['model']
 end
 
-gera_controller(data_hash)    if data_hash['files'] == nil or data_hash['files'][0]['controller']  == nil or (data_hash['files'][0]['controller']  != nil and data_hash['files'][0]['controller']  != 'skip')
-gera_helper(data_hash)        if data_hash['files'] == nil or data_hash['files'][0]['helper']      == nil or (data_hash['files'][0]['helper']      != nil and data_hash['files'][0]['helper']      != 'skip')
-gera_model(data_hash)         if data_hash['files'] == nil or data_hash['files'][0]['model']       == nil or (data_hash['files'][0]['model']       != nil and data_hash['files'][0]['model']       != 'skip')
-gera_policy(data_hash)        if data_hash['files'] == nil or data_hash['files'][0]['policy']      == nil or (data_hash['files'][0]['policy']      != nil and data_hash['files'][0]['policy']      != 'skip')
-gera_form(data_hash)          if data_hash['files'] == nil or data_hash['files'][0]['_form']       == nil or (data_hash['files'][0]['_form']       != nil and data_hash['files'][0]['_form']       != 'skip')
-gera_new(data_hash)           if data_hash['files'] == nil or data_hash['files'][0]['new']         == nil or (data_hash['files'][0]['new']         != nil and data_hash['files'][0]['new']         != 'skip')
-gera_show(data_hash)          if data_hash['files'] == nil or data_hash['files'][0]['show']        == nil or (data_hash['files'][0]['show']        != nil and data_hash['files'][0]['show']        != 'skip')
-gera_edit(data_hash)          if data_hash['files'] == nil or data_hash['files'][0]['edit']        == nil or (data_hash['files'][0]['edit']        != nil and data_hash['files'][0]['edit']        != 'skip')
-gera_index(data_hash)         if data_hash['files'] == nil or data_hash['files'][0]['index']       == nil or (data_hash['files'][0]['index']       != nil and data_hash['files'][0]['index']       != 'skip')
-gera_index_partial(data_hash) if data_hash['files'] == nil or data_hash['files'][0]['_index']      == nil or (data_hash['files'][0]['_index']      != nil and data_hash['files'][0]['_index']      != 'skip')
+gera_controller(data_hash)    if data_hash['files'] == nil        or data_hash['files'][0]['controller']  == nil or (data_hash['files'][0]['controller']  != nil and data_hash['files'][0]['controller']  != 'skip')
+gera_helper(data_hash)        if data_hash['files'] == nil        or data_hash['files'][0]['helper']      == nil or (data_hash['files'][0]['helper']      != nil and data_hash['files'][0]['helper']      != 'skip')
+gera_model(data_hash)         if data_hash['files'] == nil        or data_hash['files'][0]['model']       == nil or (data_hash['files'][0]['model']       != nil and data_hash['files'][0]['model']       != 'skip')
+gera_policy(data_hash)        if data_hash['files'] == nil        or data_hash['files'][0]['policy']      == nil or (data_hash['files'][0]['policy']      != nil and data_hash['files'][0]['policy']      != 'skip')
+gera_form(data_hash)          if data_hash['files'] == nil        or data_hash['files'][0]['_form']       == nil or (data_hash['files'][0]['_form']       != nil and data_hash['files'][0]['_form']       != 'skip')
+gera_new(data_hash)           if data_hash['files'] == nil        or data_hash['files'][0]['new']         == nil or (data_hash['files'][0]['new']         != nil and data_hash['files'][0]['new']         != 'skip')
+gera_show(data_hash)          if data_hash['files'] == nil        or data_hash['files'][0]['show']        == nil or (data_hash['files'][0]['show']        != nil and data_hash['files'][0]['show']        != 'skip')
+gera_edit(data_hash)          if data_hash['files'] == nil        or data_hash['files'][0]['edit']        == nil or (data_hash['files'][0]['edit']        != nil and data_hash['files'][0]['edit']        != 'skip')
+gera_index(data_hash)         if data_hash['files'] == nil        or data_hash['files'][0]['index']       == nil or (data_hash['files'][0]['index']       != nil and data_hash['files'][0]['index']       != 'skip')
+gera_index_partial(data_hash) if data_hash['files'] == nil        or data_hash['files'][0]['_index']      == nil or (data_hash['files'][0]['_index']      != nil and data_hash['files'][0]['_index']      != 'skip')
+gera_nested(data_hash)        if data_hash['nested_form'] == nil  or data_hash['files'][0]['nested']      == nil or (data_hash['files'][0]['nested']      != nil and data_hash['files'][0]['nested']      != 'skip')
 gera_table_json_builder(data_hash)
 gera_index_json_builder(data_hash)
 gera_show_json_builder(data_hash)
