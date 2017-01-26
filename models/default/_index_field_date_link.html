@@ -1,2 +1,2 @@
                     
-                    <td align="##{align}"><%= link_to ##{table.downcase}.##{field_name}, edit_##{table.downcase}_path(##{table.downcase}) %></td>
+                    <td align="##{align}"><%= link_to ##{table.downcase}.##{field_name}, edit_##{table.downcase}_path(##{table.downcase}, :parent_id => @parent.id, :parent_class => @parent.class.name.downcase.to_s) %></td>
