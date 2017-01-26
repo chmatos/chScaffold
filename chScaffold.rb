@@ -221,6 +221,7 @@ end
 ####################################################################################################
 def gera_nested(data_hash)
   # Gera diretorio
+  return if data_hash['nested_form'] == nil 
   mkdir("#{@directory_output}/app/views/#{data_hash['plural'].downcase}/.")
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/_#{data_hash['nested_form']['table_singular'].downcase}_fields.html.erb"
 
