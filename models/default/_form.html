@@ -24,7 +24,7 @@
                 <% else %>
                   <%= submit_tag t('Save'), :class => 'btn btn-primary btn-xs' %>
                 <% end %>
-                <a><%= link_to t('Exit'), :back, :class => 'btn btn-white btn-xs' %></a>
+                <a><%= link_to t('Exit'), (controller: params[:parent_class].pluralize, action: 'edit', id: params[:parent_id].to_i), :class => 'btn btn-white btn-xs' %></a>
               </td>
             </table>
           </div>
