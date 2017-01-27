@@ -626,6 +626,7 @@ def gera_policy(data_hash)
   mkdir("#{@directory_output}/app/policies/.")
   fileout = "#{@directory_output}/app/policies/#{data_hash['table'].downcase}_policy.rb"
 
+  return if data_hash['files'] != nil and data_hash['files'][0]['policy'] != nil and data_hash['files'][0]['policy'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Cria Policy Default
   linha_policy = ""
