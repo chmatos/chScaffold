@@ -313,7 +313,10 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
         field_list = field_list.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
-        field_list = field_list.gsub('##{select_show}', field['select_show'])   if field['select_show'] != nil      
+        field_list = field_list.gsub('##{select_show}', field['select_show'])   if field['select_show'] != nil     
+        include_blank = (field['include_blank'] != nil and field['include_blank'].downcase == 'y') ? ', include_blank: true' : ''
+        p include_blank
+        field_list = field_list.gsub('##{include_blank}', include_blank)
       when 'multselect'
         field_list += File.read("models/#{@model}/_form_field_multselect.html")
         field_list = field_list.gsub('##{field_name}', field['name'])

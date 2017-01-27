@@ -5,7 +5,7 @@
                   <div class="form-group">
                     <%= f.label :##{field_name}, class: "col-sm-2 control-label" %>
                     <div class="col-sm-8">
-                      <%= f.collection_select :##{field_name}, ##{select_table}, :##{select_id}, :##{select_show}, { disabled: is_show }, { class: 'form-control s-m' } %>
+                      <%= f.collection_select :##{field_name}, ##{select_table}, :##{select_id}, :##{select_show}, { disabled: is_show ##{include_blank} }, { class: 'form-control s-m' } %>
                     </div>
                   </div>
                 </div>
