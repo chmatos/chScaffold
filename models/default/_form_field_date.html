@@ -5,7 +5,11 @@
                   <div class="form-group">
                     <%= f.label :##{field_name}, class: "col-sm-2 control-label" %>
                     <div class="col-sm-8">
-                      <%= f.text_field :##{field_name}, {:value => (@##{table.downcase}.##{field_name}.strftime(t('long_date')) if :##{field_name}), class: "form-control input-sm", id: "datapicker_##{field_name}"}, disabled: is_show %>
+                      <% if @##{table.downcase}.##{field_name}.present? %>
+                        <%= f.text_field :##{field_name}, {:value => (@##{table.downcase}.##{field_name}.strftime(t('long_date'))), class: "form-control input-sm", id: "datapicker_##{field_name}"}, disabled: is_show %>
+                      <% else %>
+                        <%= f.text_field :##{field_name}, {class: "form-control input-sm", id: "datapicker_##{field_name}"} %>
+                      <% end %>
                     </div>
                   </div>
                 </div>

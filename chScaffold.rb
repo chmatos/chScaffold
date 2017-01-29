@@ -401,7 +401,7 @@ def gera_header_field_list(fields, partial: false)
   fields.each do |field|
     next if field['index'] != nil and field['index'].downcase == 'n'
     next if partial and (field['index_partial'] == nil or field['index_partial'].downcase != 'y')
-    next if field['type'] == 'hidden' or field['type'] == 'parent'
+    next if field['type'] == 'hidden'
     header_field_list += File.read("models/#{@model}/_index_header.html")
     header_field_list = header_field_list.gsub('##{field_name}', field['name'])
     header_field_list = header_field_list.gsub('##{field_name.camelize}', field['name'].camelize)
@@ -452,6 +452,13 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
         detail_field_list = detail_field_list.gsub('##{select_show}', "#{field['select_show']}")
+        align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)
+      when 'parent'
+        detail_field_list += File.read("models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list = detail_field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
+        detail_field_list = detail_field_list.gsub('##{select_show}', "#{field['parent_show']}")
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'blob'
