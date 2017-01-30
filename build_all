@@ -6,3 +6,4 @@ ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/perfil
 ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/cliente
 ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/avaliacao
 ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/chave
+ruby ../chScaffold/chScaffold.rb ../proseek/scaffold/avaliacao_resposta

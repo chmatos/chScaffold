@@ -1,9 +1,22 @@
               
             <% if params[:parent_id].present? %>
-              <%= f.hidden_field :##{field_name}, :value => params[:parent_id] %>
+              <%= f.hidden_field :##{field_name_hidden}, :value => params[:parent_id] %>
             <% else %>
-              <%= f.hidden_field :##{field_name} %>
+              <%= f.hidden_field :##{field_name_hidden} %>
             <% end %>              
-              <%#= f.hidden_field :##{field_name}, :value => params[:parent_id] %>
-              <%= hidden_field_tag :parent_id, params[:parent_id] %>
+            <%= hidden_field_tag :parent_id, params[:parent_id] %>
+
+            <%# Block of ##{field_name} %>
+            <% if @##{table.downcase}.##{field_name}.present? and ##{show} %>
+              <div class="row">
+                <div class="col-sm-10">
+                  <div class="form-group">
+                    <%= f.label :##{field_name}, class: "col-sm-2 control-label" %>
+                    <div class="col-sm-8">
+                      <%= text_field_tag @##{table.downcase}.##{field_name}.##{select_show}, @##{table.downcase}.##{field_name}.##{select_show}, class: "form-control input-sm", disabled: true %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
               
