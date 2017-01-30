@@ -295,7 +295,14 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{field_value}', field['value'])            
       when 'parent'
         field_list += File.read("models/#{@model}/_form_field_parent.html")    
-        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{field_name_hidden}', field['name'])
+        field_list = field_list.gsub('##{select_show}', "#{field['parent_show']}")
+        field_list = field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
+        if field['show'] != nil and field['show'] == 'y'
+          field_list = field_list.gsub('##{show}', 'true') 
+        else
+          field_list = field_list.gsub('##{show}', 'false')
+        end
       when 'string'
         field_list += File.read("models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
