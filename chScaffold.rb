@@ -609,10 +609,11 @@ end
 ####################################################################################################
 def gera_render_index(data_hash)
   render_index_list = ""
-  return render_index_list if data_hash['has_many'] == nil 
+  return render_index_list if data_hash['has_many'] == nil and data_hash['has_many_destroy'] == nil
   return render_index_list if data_hash['nested_form'] != nil
 
-  has_many_tables = data_hash['has_many'].split(',')
+  has_many_tables = data_hash['has_many'].split(',') if data_hash['has_many'] != nil
+  has_many_tables = data_hash['has_many_destroy'].split(',') if data_hash['has_many_destroy'] != nil
   has_many_tables.each do |has_many_table|
     render_index_list += File.read("models/#{@model}/render_index.html")
     render_index_list = render_index_list.gsub('##{has_many_table}', has_many_table.gsub(/\s+/, ""))
