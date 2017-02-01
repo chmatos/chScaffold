@@ -458,7 +458,7 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
-        detail_field_list = detail_field_list.gsub('##{select_show}', "#{field['select_show']}")
+        detail_field_list = detail_field_list.gsub('##{select_show}', ".#{field['select_show']}")
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'parent'
