@@ -34,12 +34,14 @@ def gera_controller(data_hash)
   # Cria campo Permit para ser substituido no Controller
   permit = gera_permit(data_hash)
   nested_build_children = gera_nested_build_children(data_hash)
+  convert_utf8_list    = gera_convert_utf8_list(data_hash)
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/controller.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
   conteudo = conteudo.gsub('##{nested_build_children}', nested_build_children)
+  conteudo = conteudo.gsub('##{convert_utf8_list}'    , convert_utf8_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -591,6 +593,17 @@ def gera_belongs_to_list(data_hash)
     belongs_to_list = belongs_to_list.gsub('##{belongs_to}', belongs_to.gsub(/\s+/, ""))
   end
   return belongs_to_list
+end
+
+####################################################################################################
+def gera_convert_utf8_list(data_hash)
+  saida = ""
+  data_hash['fields'].each do |field|
+    next if field['type'] != 'blob'
+    saida += File.read("models/#{@model}/controller_convert_utf8.rb")
+    saida = saida.gsub('##{field_name}', field['name'])
+  end
+  return saida
 end
 
 ####################################################################################################

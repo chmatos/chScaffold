@@ -1,7 +1,3 @@
               
-            <% if ##{field_value}.present %>
-              <%= f.hidden_field :##{field_name}, :value => ##{field_value} %>
-            <% else %>
-              <%= f.hidden_field :##{field_name}, :value => ##{field_value} %>
-            <% end %>
+            <%= f.hidden_field :##{field_name}, :value => ##{field_value} %>
               

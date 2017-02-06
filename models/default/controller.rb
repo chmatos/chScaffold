@@ -72,6 +72,7 @@ class ##{plural.camelize}Controller < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_##{table.downcase}
       @##{table.downcase} = ##{table.capitalize}.find(params[:id])
+      ##{convert_utf8_list}
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

@@ -1,5 +1,6 @@
 
                     <tr>
+                      <%= f.hidden_field :##{table.downcase}_id, :value => ##{table.downcase}_id %>
                       ##{nested_field_list}
                       <td>
                         <% if !is_show %>
