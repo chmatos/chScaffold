@@ -34,14 +34,12 @@ def gera_controller(data_hash)
   # Cria campo Permit para ser substituido no Controller
   permit = gera_permit(data_hash)
   nested_build_children = gera_nested_build_children(data_hash)
-  convert_utf8_list    = gera_convert_utf8_list(data_hash)
   
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/controller.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
   conteudo = conteudo.gsub('##{nested_build_children}', nested_build_children)
-  conteudo = conteudo.gsub('##{convert_utf8_list}'    , convert_utf8_list)
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -467,6 +465,7 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
+        detail_field_list = detail_field_list.gsub('##{select_show}', ".#{field['select_show']}")  if field['select_show'] != nil
         detail_field_list = detail_field_list.gsub('##{select_show}', ".#{field['parent_show']}")  if field['parent_show'] != nil
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
@@ -593,17 +592,6 @@ def gera_belongs_to_list(data_hash)
     belongs_to_list = belongs_to_list.gsub('##{belongs_to}', belongs_to.gsub(/\s+/, ""))
   end
   return belongs_to_list
-end
-
-####################################################################################################
-def gera_convert_utf8_list(data_hash)
-  saida = ""
-  data_hash['fields'].each do |field|
-    next if field['type'] != 'blob'
-    saida += File.read("models/#{@model}/controller_convert_utf8.rb")
-    saida = saida.gsub('##{field_name}', field['name'])
-  end
-  return saida
 end
 
 ####################################################################################################

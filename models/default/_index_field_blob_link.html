@@ -1,5 +1,4 @@
                     
-                    <% texto = raw ##{table.downcase}.##{field_name}.force_encoding('utf-8').lstrip %>
                     <td align="##{align}">
-                      <%= link_to texto, edit_##{table.downcase}_path(##{table.downcase}, :parent_action => params['action'], :parent_id => params['id'], :parent_controller => params['controller']) %>
+                      <%= link_to ##{table.downcase}.##{field_name}, edit_##{table.downcase}_path(##{table.downcase}, :parent_action => params['action'], :parent_id => params['id'], :parent_controller => params['controller']) %>
                     </td>
