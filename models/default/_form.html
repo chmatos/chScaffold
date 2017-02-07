@@ -41,7 +41,7 @@
             ##{field_list}
           
           </div>
-          <% if !params[:action] = 'new' %>
+          <% if params[:action] != 'new' %>
             ##{render_index_list}
           <% end %>
 
