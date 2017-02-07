@@ -114,7 +114,7 @@ def gera_form(data_hash)
   summernote_list = gera_summernote_list(data_hash['fields'])
   dual_select = gera_dual_select(data_hash['fields'])
   render_list = gera_render_index(data_hash)
-  render_list = gera_render_nested(data_hash, render_list)
+  render_nested = gera_render_nested(data_hash)
 
   # Carrega modelo e substitui campos
   conteudo = File.read("models/#{@model}/_form.html")
@@ -123,6 +123,7 @@ def gera_form(data_hash)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
   conteudo = conteudo.gsub('##{dual_select}', dual_select)
   conteudo = conteudo.gsub('##{render_index_list}', render_list)
+  conteudo = conteudo.gsub('##{render_nested_list}', render_nested)
   conteudo = substitui_campos(conteudo, data_hash)
 
   add_summernote_files(data_hash)  if summernote_list != ''
@@ -623,8 +624,8 @@ def gera_render_index(data_hash)
 end
 
 ####################################################################################################
-def gera_render_nested(data_hash, entrada)
-  return entrada if data_hash['nested_form'] == nil
+def gera_render_nested(data_hash)
+  return '' if data_hash['nested_form'] == nil
 
   header_field_list = gera_header_field_list(data_hash['nested_form']['fields'])  
 
