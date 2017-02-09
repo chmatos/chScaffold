@@ -6,9 +6,9 @@
                     <%= f.label :##{field_name}, class: "col-sm-2 control-label" %>
                     <div class="col-sm-8">
                       <% if @##{table.downcase}.##{field_name}.present? %>
-                        <%= f.datetime_select :##{field_name}, class: "form-control input-sm", disabled: is_show %>
+                        <%= f.text_field :##{field_name}, {:value => (@##{table.downcase}.##{field_name}.strftime(t('long_date'))), class: "form-control input-sm", id: "datapicker_##{field_name}", disabled: is_show } %>
                       <% else %>
-                        <%= f.datetime_select :##{field_name}, class: "form-control input-sm", disabled: is_show %>
+                        <%= f.text_field :##{field_name}, {class: "form-control input-sm", id: "datapicker_##{field_name}", disabled: is_show } %>
                       <% end %>
                     </div>
                   </div>

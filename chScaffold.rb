@@ -36,7 +36,7 @@ def gera_controller(data_hash)
   nested_build_children = gera_nested_build_children(data_hash)
   
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/controller.rb")
+  conteudo = File.read("../chScaffold/../chScaffold/models/#{@model}/controller.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
   conteudo = conteudo.gsub('##{nested_build_children}', nested_build_children)
@@ -54,7 +54,7 @@ def gera_helper(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['helper'] != nil and data_hash['files'][0]['helper'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/helper.rb")
+  conteudo = File.read("../chScaffold/models/#{@model}/helper.rb")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -87,7 +87,7 @@ def gera_model(data_hash)
   end  
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/model.rb")
+  conteudo = File.read("../chScaffold/models/#{@model}/model.rb")
   conteudo = conteudo.gsub('##{search}', search) if search != ""
   conteudo = conteudo.gsub('##{has_many_list}', has_many_list) 
   conteudo = conteudo.gsub('##{has_many_destroy_list}', has_many_destroy_list) 
@@ -110,16 +110,16 @@ def gera_form(data_hash)
 
   # Cria field_list para ser substituido no _form
   field_list = gera_field_list(data_hash['fields']) 
-  datapicker_list = gera_datapicker_list(data_hash['fields'])
+  datepicker_list = gera_datepicker_list(data_hash['fields'])
   summernote_list = gera_summernote_list(data_hash['fields'])
   dual_select = gera_dual_select(data_hash['fields'])
   render_list = gera_render_index(data_hash)
   render_nested = gera_render_nested(data_hash)
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/_form.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/_form.html")
   conteudo = conteudo.gsub('##{field_list}', field_list)
-  conteudo = conteudo.gsub('##{datapicker_list}', datapicker_list)
+  conteudo = conteudo.gsub('##{datepicker_list}', datepicker_list)
   conteudo = conteudo.gsub('##{summernote_list}', summernote_list)
   conteudo = conteudo.gsub('##{dual_select}', dual_select)
   conteudo = conteudo.gsub('##{render_index_list}', render_list)
@@ -141,7 +141,7 @@ def gera_new(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['new'] != nil and data_hash['files'][0]['new'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/new.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/new.html")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -156,7 +156,7 @@ def gera_show(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['show'] != nil and data_hash['files'][0]['show'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/show.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/show.html")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -171,7 +171,7 @@ def gera_edit(data_hash)
   return if data_hash['files'] != nil and data_hash['files'][0]['edit'] != nil and data_hash['files'][0]['edit'] == 'skip_if_exist' and File.exist?(fileout)
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/edit.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/edit.html")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -190,7 +190,7 @@ def gera_index(data_hash)
   detail_field_list = gera_detail_field_list(data_hash['fields']) 
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/index.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/index.html")
   conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
   conteudo = conteudo.gsub('##{detail_field_list}', detail_field_list) 
   conteudo = substitui_campos(conteudo, data_hash)
@@ -211,7 +211,7 @@ def gera_index_partial(data_hash)
   detail_field_list = gera_detail_field_list(data_hash['fields'], partial: true) 
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/_index.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/_index.html")
   conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
   conteudo = conteudo.gsub('##{detail_field_list}', detail_field_list) 
   conteudo = substitui_campos(conteudo, data_hash)
@@ -234,7 +234,7 @@ def gera_nested(data_hash)
 
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/_nested.html")
+  conteudo = File.read("../chScaffold/models/#{@model}/_nested.html")
   conteudo = conteudo.gsub('##{header_field_list}', header_field_list) 
   conteudo = conteudo.gsub('##{nested_field_list}', nested_field_list) 
   conteudo = substitui_campos(conteudo, data_hash)
@@ -252,7 +252,7 @@ def gera_table_json_builder(data_hash)
   permit = gera_permit(data_hash)
   
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/_table.json.jbuilder")
+  conteudo = File.read("../chScaffold/models/#{@model}/_table.json.jbuilder")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{permit}', permit)
 
@@ -266,7 +266,7 @@ def gera_index_json_builder(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/index.json.jbuilder"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/index.json.jbuilder")
+  conteudo = File.read("../chScaffold/models/#{@model}/index.json.jbuilder")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -279,7 +279,7 @@ def gera_show_json_builder(data_hash)
   fileout = "#{@directory_output}/app/views/#{data_hash['plural'].downcase}/show.json.jbuilder"
 
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/show.json.jbuilder")
+  conteudo = File.read("../chScaffold/models/#{@model}/show.json.jbuilder")
   conteudo = substitui_campos(conteudo, data_hash)
 
   grava(fileout,conteudo)
@@ -291,33 +291,34 @@ def gera_field_list(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'hidden'
-        field_list += File.read("models/#{@model}/_form_field_hidden.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_hidden.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_value}', field['value'])            
       when 'parent'
-        field_list += File.read("models/#{@model}/_form_field_parent.html")    
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_parent.html")    
         field_list = field_list.gsub('##{field_name_hidden}', field['name'])
         field_list = field_list.gsub('##{select_show}', ".#{field['parent_show']}") if field['parent_show'] != nil
         field_list = field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
+        field_list = field_list.gsub('##{parent_default}',  "#{field['parent_default']}")
         if field['show'] != nil and field['show'] == 'y'
           field_list = field_list.gsub('##{show}', 'true') 
         else
           field_list = field_list.gsub('##{show}', 'false')
         end
       when 'string'
-        field_list += File.read("models/#{@model}/_form_field.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
       when 'enum'
-        field_list += File.read("models/#{@model}/_form_field_enum.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_enum.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_name_plural}', field['name_plural'])
       when 'integer'
-        field_list += File.read("models/#{@model}/_form_field.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'number_field')           
       when 'select'
-        field_list += File.read("models/#{@model}/_form_field_collect_select.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_collect_select.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
         field_list = field_list.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
@@ -326,22 +327,22 @@ def gera_field_list(fields)
         p include_blank
         field_list = field_list.gsub('##{include_blank}', include_blank)
       when 'multselect'
-        field_list += File.read("models/#{@model}/_form_field_multselect.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_multselect.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{select_table}', field['select_table'])     if field['select_table'] != nil        
         field_list = field_list.gsub('##{select_id}', field['select_id'])           if field['select_id'] != nil        
         field_list = field_list.gsub('##{select_show}', field['select_show'])       if field['select_show'] != nil      
         field_list = field_list.gsub('##{field_name_plural}', field['name_plural'])
       when 'float'
-        field_list += File.read("models/#{@model}/_form_field.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'number_field')      
       when 'date','datetime'
-        field_list += File.read("models/#{@model}/_form_field_date.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_date.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
       when 'blob'
-        field_list += File.read("models/#{@model}/_form_field_blob.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_blob.html")
         field_list = field_list.gsub('##{field_name}', field['name'])    
       else 
     end
@@ -355,26 +356,26 @@ def gera_nested_detail_field_list(fields)
   fields.each do |field|
     case field['type'].downcase
       #when 'hidden'
-      #  saida += File.read("models/#{@model}/_form_field_hidden.html")
+      #  saida += File.read("../chScaffold/models/#{@model}/_form_field_hidden.html")
       #  saida = saida.gsub('##{field_name}', field['name'])
       #  saida = saida.gsub('##{field_value}', field['value'])            
       #when 'parent'
-      #  saida += File.read("models/#{@model}/_form_field_parent.html")    
+      #  saida += File.read("../chScaffold/models/#{@model}/_form_field_parent.html")    
       #  saida = saida.gsub('##{field_name}', field['name'])
       when 'string'
-        saida += File.read("models/#{@model}/_nested_field.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{field_type}', 'text_field')
       when 'enum'
-        saida += File.read("models/#{@model}/_nested_field_enum.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field_enum.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{field_name_plural}', field['name_plural'])
       when 'integer'
-        saida += File.read("models/#{@model}/_nested_field.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{field_type}', 'number_field')           
       when 'select'
-        saida += File.read("models/#{@model}/_nested_field_collect_select.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field_collect_select.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{select_table}', field['select_table']) if field['select_table'] != nil        
         saida = saida.gsub('##{select_id}', field['select_id'])       if field['select_id'] != nil        
@@ -387,15 +388,15 @@ def gera_nested_detail_field_list(fields)
       #  saida = saida.gsub('##{select_show}', field['select_show'])       if field['select_show'] != nil      
       #  saida = saida.gsub('##{field_name_plural}', field['name_plural'])
       when 'float'
-        saida += File.read("models/#{@model}/_nested_field.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{field_type}', 'number_field')      
       when 'date','datetime'
-        saida += File.read("models/#{@model}/_nested_field_date.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field_date.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{field_type}', 'text_field')
       when 'blob'
-        saida += File.read("models/#{@model}/_nested_field_blob.html")
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field_blob.html")
         saida = saida.gsub('##{field_name}', field['name'])    
       else 
     end
@@ -410,7 +411,7 @@ def gera_header_field_list(fields, partial: false)
     next if field['index'] != nil and field['index'].downcase == 'n'
     next if partial and (field['index_partial'] == nil or field['index_partial'].downcase != 'y')
     next if field['type'] == 'hidden'
-    header_field_list += File.read("models/#{@model}/_index_header.html")
+    header_field_list += File.read("../chScaffold/models/#{@model}/_index_header.html")
     header_field_list = header_field_list.gsub('##{field_name}', field['name'])
     header_field_list = header_field_list.gsub('##{field_name.camelize}', field['name'].camelize)
   end
@@ -426,14 +427,14 @@ def gera_detail_field_list(fields, partial: false)
     case field['type'].downcase
       when 'hidden'   
       when 'string','enum'
-        detail_field_list += File.read("models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_string.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_string_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'integer'
-        detail_field_list += File.read("models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
@@ -441,8 +442,8 @@ def gera_detail_field_list(fields, partial: false)
         precision = field['precision'] if field['precision'] != nil
         detail_field_list = detail_field_list.gsub('##{precision}', precision.to_s)       
       when 'float'
-        detail_field_list += File.read("models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)   
@@ -450,29 +451,29 @@ def gera_detail_field_list(fields, partial: false)
         precision = field['precision'] if field['precision'] != nil
         detail_field_list = detail_field_list.gsub('##{precision}', precision)       
       when 'date','datetime'
-        detail_field_list += File.read("models/#{@model}/_index_field_date.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_date_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_date.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_date_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'select'
-        detail_field_list += File.read("models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
         detail_field_list = detail_field_list.gsub('##{select_show}', ".#{field['select_show']}")
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'parent'
-        detail_field_list += File.read("models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_select_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
         detail_field_list = detail_field_list.gsub('##{select_show}', ".#{field['select_show']}")  if field['select_show'] != nil
         detail_field_list = detail_field_list.gsub('##{select_show}', ".#{field['parent_show']}")  if field['parent_show'] != nil
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'blob'
-        detail_field_list += File.read("models/#{@model}/_index_field_blob.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
-        detail_field_list += File.read("models/#{@model}/_index_field_blob_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_blob.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_blob_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)        
@@ -483,17 +484,17 @@ def gera_detail_field_list(fields, partial: false)
 end
 
 ####################################################################################################
-def gera_datapicker_list(fields)
-  datapicker_list = ""
+def gera_datepicker_list(fields)
+  datepicker_list = ""
   fields.each do |field|
     case field['type'].downcase
       when 'date','datetime'
-        datapicker_list += File.read("models/#{@model}/jquery_datapicker_date")
-        datapicker_list = datapicker_list.gsub('##{field_name}', field['name'])
+        datepicker_list += File.read("../chScaffold/models/#{@model}/jquery_datepicker_date")
+        datepicker_list = datepicker_list.gsub('##{field_name}', field['name'])
       else 
     end
   end
-  return datapicker_list
+  return datepicker_list
 end
 
 ####################################################################################################
@@ -502,7 +503,7 @@ def gera_summernote_list(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'blob'
-        summernote_list += File.read("models/#{@model}/jquery_summernote")
+        summernote_list += File.read("../chScaffold/models/#{@model}/jquery_summernote")
         summernote_list = summernote_list.gsub('##{field_name}', field['name'])
       else 
     end
@@ -516,7 +517,7 @@ def gera_dual_select(fields)
   fields.each do |field|
     case field['type'].downcase
       when 'multselect'
-        dual_select += File.read("models/#{@model}/jquery_dual_select")
+        dual_select += File.read("../chScaffold/models/#{@model}/jquery_dual_select")
         break
         #dual_select = dual_select.gsub('##{field_name}', field['name'])
       else 
@@ -532,7 +533,7 @@ def gera_has_many_list(data_hash)
 
   has_manies = data_hash['has_many'].split(',')
   has_manies.each do |has_many|
-    has_many_list += File.read("models/#{@model}/model_has_many.rb")
+    has_many_list += File.read("../chScaffold/models/#{@model}/model_has_many.rb")
     has_many_list = has_many_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
   end
   return has_many_list
@@ -545,7 +546,7 @@ def gera_has_many_destroy_list(data_hash)
 
   has_manies = data_hash['has_many_destroy'].split(',')
   has_manies.each do |has_many|
-    has_many_destroy_list += File.read("models/#{@model}/model_has_many_destroy.rb")
+    has_many_destroy_list += File.read("../chScaffold/models/#{@model}/model_has_many_destroy.rb")
     has_many_destroy_list = has_many_destroy_list.gsub('##{has_many}', has_many.gsub(/\s+/, ""))
   end
   return has_many_destroy_list
@@ -560,7 +561,7 @@ def gera_nested_model(data_hash)
 
   #has_manies = data_hash['nested_form'].split(',')
   #has_manies.each do |has_many|
-    nested_list += File.read("models/#{@model}/model_nested.rb")
+    nested_list += File.read("../chScaffold/models/#{@model}/model_nested.rb")
     nested_list = nested_list.gsub('##{nested_table_plural}', data_hash['nested_form']['table_plural'])
     nested_list = nested_list.gsub('##{nested_noblank}', nested_noblank)
     #nested_list = nested_list.gsub('##{nested_table_plural}', has_many.gsub(/\s+/, ""))
@@ -576,7 +577,7 @@ def gera_has_and_belongs_to_many_list(data_hash)
   has_manies = data_hash['has_and_belongs_to_many'].split(',')
   has_manies.each do |has_and_belongs_to_many|
     puts has_and_belongs_to_many
-    has_and_belongs_to_many_list += File.read("models/#{@model}/model_has_and_belongs_to_many.rb")
+    has_and_belongs_to_many_list += File.read("../chScaffold/models/#{@model}/model_has_and_belongs_to_many.rb")
     has_and_belongs_to_many_list = has_and_belongs_to_many_list.gsub('##{has_and_belongs_to_many}', has_and_belongs_to_many.gsub(/\s+/, ""))
   end
   return has_and_belongs_to_many_list
@@ -589,7 +590,7 @@ def gera_belongs_to_list(data_hash)
 
   belongs_tos = data_hash['belongs_to'].split(',')
   belongs_tos.each do |belongs_to|
-    belongs_to_list += File.read("models/#{@model}/model_belongs_to.rb")
+    belongs_to_list += File.read("../chScaffold/models/#{@model}/model_belongs_to.rb")
     belongs_to_list = belongs_to_list.gsub('##{belongs_to}', belongs_to.gsub(/\s+/, ""))
   end
   return belongs_to_list
@@ -601,7 +602,7 @@ def gera_enum_list(data_hash)
 
   data_hash['fields'].each do |field|
     next if field['type'] != 'enum'
-    enum_list += File.read("models/#{@model}/model_enum.rb")
+    enum_list += File.read("../chScaffold/models/#{@model}/model_enum.rb")
     enum_list = enum_list.gsub('##{field_name}', field['name'])
     enum_list = enum_list.gsub('##{enum_list}',  field['enum_list'])
   end
@@ -617,7 +618,7 @@ def gera_render_index(data_hash)
   has_many_tables = data_hash['has_many'].split(',') if data_hash['has_many'] != nil
   has_many_tables = data_hash['has_many_destroy'].split(',') if data_hash['has_many_destroy'] != nil
   has_many_tables.each do |has_many_table|
-    render_index_list += File.read("models/#{@model}/render_index.html")
+    render_index_list += File.read("../chScaffold/models/#{@model}/render_index.html")
     render_index_list = render_index_list.gsub('##{has_many_table}', has_many_table.gsub(/\s+/, ""))
   end
   return render_index_list
@@ -629,7 +630,7 @@ def gera_render_nested(data_hash)
 
   header_field_list = gera_header_field_list(data_hash['nested_form']['fields'])  
 
-  saida = File.read("models/#{@model}/render_nested.html")
+  saida = File.read("../chScaffold/models/#{@model}/render_nested.html")
   saida = saida.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
   saida = saida.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
   saida = saida.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
@@ -658,7 +659,7 @@ def gera_policy(data_hash)
   end
   
   # Carrega modelo e substitui campos
-  conteudo = File.read("models/#{@model}/policy.rb")
+  conteudo = File.read("../chScaffold/models/#{@model}/policy.rb")
   conteudo = substitui_campos(conteudo, data_hash)
   conteudo = conteudo.gsub('##{policy}', linha_policy)
 
@@ -704,7 +705,7 @@ def gera_nested_build_children(data_hash)
 
   #itens = data_hash['nested_form'].split(',')
   #itens.each do |item|
-    nested_build_children += File.read("models/#{@model}/controller_nested.rb")
+    nested_build_children += File.read("../chScaffold/models/#{@model}/controller_nested.rb")
     nested_build_children = nested_build_children.gsub('##{nested_form.table_singular}', data_hash['nested_form']['table_singular'])  if data_hash['nested_form']['table_singular'] != nil
     nested_build_children = nested_build_children.gsub('##{nested_form.table_plural}',   data_hash['nested_form']['table_plural'])    if data_hash['nested_form']['table_plural']   != nil
     nested_build_children = nested_build_children.gsub('##{nested_form.qty}',            data_hash['nested_form']['qty'])             if data_hash['nested_form']['qty']            != nil
@@ -748,10 +749,10 @@ end
 
 ####################################################################################################
 def add_helpers_in_apllication_helper(data_hash)
-  conteudo = File.read("models/#{@model}/number_format_helper.rb")
+  conteudo = File.read("../chScaffold/models/#{@model}/number_format_helper.rb")
   add_in_file(data_hash, 'app/helpers/application_helper.rb',conteudo, 2)
 
-  conteudo = File.read("models/#{@model}/is_show_helper.rb")
+  conteudo = File.read("../chScaffold/models/#{@model}/is_show_helper.rb")
   add_in_file(data_hash, 'app/helpers/application_helper.rb',conteudo, 2)
 end
 
