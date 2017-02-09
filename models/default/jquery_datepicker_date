@@ -1,0 +1,5 @@
+      
+      $('#datepicker_##{field_name}').css({'position': 'relative', 'z-index': '100000'});
+      $('#datepicker_##{field_name}').datepicker({
+        dateFormat: "<%= t('long_date') %>"
+      });

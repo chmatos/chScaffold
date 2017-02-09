@@ -1,5 +1,5 @@
               
                       <%# Block of ##{field_name} %>
                       <td>
-                        <%= f.text_field :##{field_name}, {:value => (@##{table.downcase}.##{field_name}.strftime(t('long_date')) if :##{field_name}), class: "form-control input-sm", id: "datapicker_##{field_name}"}, disabled: is_show %>
+                        <%= f.text_field :##{field_name}, {:value => (@##{table.downcase}.##{field_name}.strftime(t('long_date')) if :##{field_name}), class: "form-control input-sm", id: "datepicker_##{field_name}"}, disabled: is_show %>
                       </td>

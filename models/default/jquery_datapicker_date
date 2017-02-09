@@ -1,5 +1,0 @@
-      
-      $('#datapicker_##{field_name}').css({'position': 'relative', 'z-index': '100000'});
-      $('#datepicker-prazo').datepicker({
-        dateFormat: "<%= t('long_date') %>"
-      });
