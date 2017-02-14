@@ -309,6 +309,10 @@ def gera_field_list(fields)
         field_list += File.read("../chScaffold/models/#{@model}/_form_field.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
+      when 'calculated'
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_calculated.html")
+        field_list = field_list.gsub('##{field_name}', field['name'])
+        field_list = field_list.gsub('##{formula}', field['formula'])
       when 'enum'
         field_list += File.read("../chScaffold/models/#{@model}/_form_field_enum.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
@@ -432,6 +436,10 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
         detail_field_list = detail_field_list.gsub('##{align}', align)
+      when 'calculated'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_calculated.html")
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        detail_field_list = detail_field_list.gsub('##{formula}', field['formula'].gsub('@',''))        
       when 'integer'
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
