@@ -4,7 +4,7 @@
             <% elsif params[:parent_id].present? and params[:parent_id] > 0 %>
               <%= f.hidden_field :##{field_name_hidden}, :value => params[:parent_id] %>
             <% else %>
-                <%= f.hidden_field :##{field_name_hidden}, :value => ##{parent_default} %>
+                <%= f.hidden_field :##{field_name_hidden} ##{parent_default} %>
             <% end %>              
 
             <%= hidden_field_tag :parent_id, params[:parent_id] %>
