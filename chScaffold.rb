@@ -124,6 +124,7 @@ def gera_form(data_hash)
   conteudo = conteudo.gsub('##{dual_select}', dual_select)
   conteudo = conteudo.gsub('##{render_index_list}', render_list)
   conteudo = conteudo.gsub('##{render_nested_list}', render_nested)
+  conteudo = conteudo.gsub('##{button_save}', show_button(data_hash, '_form_save'))
   conteudo = substitui_campos(conteudo, data_hash)
 
   add_summernote_files(data_hash)  if summernote_list != ''
@@ -299,7 +300,10 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{field_name_hidden}', field['name'])
         field_list = field_list.gsub('##{select_show}', ".#{field['parent_show']}") if field['parent_show'] != nil
         field_list = field_list.gsub('##{field_name}',  "#{field['name'].split('_')[0]}")
-        field_list = field_list.gsub('##{parent_default}',  "#{field['parent_default']}")
+
+        parent_default = field['parent_default'] != nil ? ", :value => #{field['parent_default']}" : ""
+        field_list = field_list.gsub('##{parent_default}', parent_default)
+
         if field['show'] != nil and field['show'] == 'y'
           field_list = field_list.gsub('##{show}', 'true') 
         else
@@ -720,6 +724,19 @@ def gera_nested_build_children(data_hash)
     #nested_build_children = nested_build_children.gsub('##{belongs_to}', item.gsub(/\s+/, ""))
   #end
   return nested_build_children
+end
+
+####################################################################################################
+def show_button(data_hash, button)
+  if data_hash['buttons'] == nil or data_hash['buttons'][0][button] == nil
+    return "if true"
+  else 
+    if data_hash['buttons'][0][button].downcase == 'n' or data_hash['buttons'][0][button].downcase == 'no'
+      return "if false"
+    else
+      return "if true"
+    end
+  end
 end
 
 ####################################################################################################
