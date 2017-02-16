@@ -1,13 +1,12 @@
               
-            <% if params[:parent_id].present? %>
+            <% if @##{table.downcase}.##{field_name_hidden}.present? %>
+              <%= f.hidden_field :##{field_name_hidden} %>
+            <% elsif params[:parent_id].present? and params[:parent_id] > 0 %>
               <%= f.hidden_field :##{field_name_hidden}, :value => params[:parent_id] %>
             <% else %>
-              <% if @##{table.downcase}.##{field_name_hidden}.present? %>
-                <%= f.hidden_field :##{field_name_hidden} %>
-              <% else %>
                 <%= f.hidden_field :##{field_name_hidden}, :value => ##{parent_default} %>
-              <% end %>
             <% end %>              
+
             <%= hidden_field_tag :parent_id, params[:parent_id] %>
 
             <%# Block of ##{field_name} %>
