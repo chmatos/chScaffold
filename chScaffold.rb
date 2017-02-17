@@ -342,7 +342,7 @@ def gera_field_list(fields)
         field_list = field_list.gsub('##{select_show}', field['select_show'])       if field['select_show'] != nil      
         field_list = field_list.gsub('##{field_name_plural}', field['name_plural'])
       when 'float'
-        field_list += File.read("../chScaffold/models/#{@model}/_form_field.html")
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_float.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'number_field')      
       when 'date','datetime'

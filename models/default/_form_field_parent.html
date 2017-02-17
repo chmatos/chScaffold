@@ -1,7 +1,7 @@
               
             <% if @##{table.downcase}.##{field_name_hidden}.present? %>
               <%= f.hidden_field :##{field_name_hidden} %>
-            <% elsif params[:parent_id].present? and params[:parent_id] > 0 %>
+            <% elsif params[:parent_id].present? and params[:parent_id].to_i > 0 %>
               <%= f.hidden_field :##{field_name_hidden}, :value => params[:parent_id] %>
             <% else %>
                 <%= f.hidden_field :##{field_name_hidden} ##{parent_default} %>
