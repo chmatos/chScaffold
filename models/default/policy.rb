@@ -3,7 +3,7 @@ class ##{table.camelize}Policy
 
   def initialize(current_user, model)
     @current_user = current_user
-    @user = model
+    @##{table.downcase} = model
   end
 
   def index?
