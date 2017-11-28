@@ -7,14 +7,26 @@
                   <tr>
                     <th>#</th>
                     ##{header_field_list}
+                    <% if policy(##{table.camelize}).destroy? %>
+                      <th></th>
+                    <% end %>                      
                   </tr>
                 </thead>
 
                 <tbody>
                   <% @##{plural.downcase}.each do |##{table.downcase}| %>
-                    <tr class="gradeA">
+                    <tr>
                       <td><%= ##{table.downcase}.id %></td>
                       ##{detail_field_list}
+
+                      <% if policy(##{table.camelize}).destroy? %>
+                        <td align="center">
+                          <%= link_to t('Delete'), ##{table.downcase}_path(##{table.downcase}), 
+                            method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-xs' do %>
+                              <i class="fa fa-trash text-navy"></i>
+                          <% end %>
+                        </td>
+                      <% end %>
                     </tr>
                   <% end %>
                 </tbody>

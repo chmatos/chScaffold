@@ -6,10 +6,6 @@ class ##{table.camelize} < ActiveRecord::Base
   ##{has_and_belongs_to_many_list}
   ##{enum_list}
   def self.search(search)
-    if search
-      where("lower(##{search}) LIKE ?", "%#{search.downcase}%")
-    else
-      all
-    end
+    search.present? ? where("lower(##{search}) LIKE ?", "%#{search.downcase}%") : all
   end
 end

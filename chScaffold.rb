@@ -349,10 +349,9 @@ def gera_field_list(fields)
         field_list += File.read("../chScaffold/models/#{@model}/_form_field_date.html")
         field_list = field_list.gsub('##{field_name}', field['name'])
         field_list = field_list.gsub('##{field_type}', 'text_field')
-      when 'blob'
-        field_list += File.read("../chScaffold/models/#{@model}/_form_field_blob.html")
-        field_list = field_list.gsub('##{field_name}', field['name'])    
       else 
+        field_list += File.read("../chScaffold/models/#{@model}/_form_field_#{field['type'].downcase}.html")
+        field_list = field_list.gsub('##{field_name}', field['name'])    
     end
   end
   return field_list
@@ -403,10 +402,9 @@ def gera_nested_detail_field_list(fields)
         saida += File.read("../chScaffold/models/#{@model}/_nested_field_date.html")
         saida = saida.gsub('##{field_name}', field['name'])
         saida = saida.gsub('##{field_type}', 'text_field')
-      when 'blob'
-        saida += File.read("../chScaffold/models/#{@model}/_nested_field_blob.html")
-        saida = saida.gsub('##{field_name}', field['name'])    
       else 
+        saida += File.read("../chScaffold/models/#{@model}/_nested_field_#{field['type'].downcase}.html")
+        saida = saida.gsub('##{field_name}', field['name'])    
     end
   end
   return saida
@@ -448,7 +446,7 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
-        align = field['align'] != nil ? field['align'] : 'left'
+        align = field['align'] != nil ? field['align'] : 'right'
         detail_field_list = detail_field_list.gsub('##{align}', align)
         precision = 0 
         precision = field['precision'] if field['precision'] != nil
@@ -457,7 +455,7 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_number_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
-        align = field['align'] != nil ? field['align'] : 'left'
+        align = field['align'] != nil ? field['align'] : 'right'
         detail_field_list = detail_field_list.gsub('##{align}', align)   
         precision = 2 
         precision = field['precision'] if field['precision'] != nil
@@ -466,7 +464,7 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_date.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_date_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
-        align = field['align'] != nil ? field['align'] : 'left'
+        align = field['align'] != nil ? field['align'] : 'center'
         detail_field_list = detail_field_list.gsub('##{align}', align)
       when 'select'
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_select.html")      if field['index_link'] == nil or  field['index_link'].downcase != 'y'
@@ -488,6 +486,11 @@ def gera_detail_field_list(fields, partial: false)
         detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_blob_link.html") if field['index_link'] != nil and field['index_link'].downcase == 'y'
         detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
         align = field['align'] != nil ? field['align'] : 'left'
+        detail_field_list = detail_field_list.gsub('##{align}', align)        
+      when 'boolean'
+        detail_field_list += File.read("../chScaffold/models/#{@model}/_index_field_boolean.html") 
+        detail_field_list = detail_field_list.gsub('##{field_name}', field['name'])
+        align = field['align'] != nil ? field['align'] : 'center'
         detail_field_list = detail_field_list.gsub('##{align}', align)        
       else 
     end
